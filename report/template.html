@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>{title}</title>
+<link rel="stylesheet" href="style.css"></head>
+<body>
+<header>
+  <h1>{title}</h1>
+  <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="{repo}">{repo_short}</a></div>
+</header>
+
+<div class="row">
+  <section><h2><span class="n">1</span>The decision</h2>
+    <p>Which two-tag concept the <b>creative director of a hypothetical 5-person Bangkok indie studio</b> pitches at
+    the greenlight on <b>Mon 2 Nov 2026</b>; it fixes the next 18-month project's genre, scope and Steam-page tags.
+    Had no pair passed the white-space test, the pitch would be a fast follower in a proven niche.</p></section>
+  <section><h2><span class="n">2</span>Why a network</h2>
+    <p>A tag-count spreadsheet ranks popular tags; it cannot see whether two tags sit in <i>separate</i> audience
+    neighbourhoods, i.e. whether combining them bridges a structural hole. That needs neighbours and paths. Prior
+    Steam-tag networks (Li &amp; Zhang, 2020) were descriptive; this one drives a build decision.</p></section>
+</div>
+
+<div class="row">
+  <section><h2><span class="n">3</span>Data</h2>
+  <table>
+    <tr><td>Sources</td><td><b>S1</b> FronkonGames Steam Games Dataset (Hugging Face): frame + snapshot. <b>S2</b> live Steam
+      store, {fetched}: tag votes (app page), review totals (appreviews).</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence. Steam robots.txt allows /app/, /appreviews/; 1 req/1.5 s, honest
+      user-agent. Game-level only, no reviewer data (PDPA n/a).</td></tr>
+    <tr><td>Volume</td><td>Indie, released 1 Jan 2023 – 31 Dec 2024, ≥10 reviews: {pop} games → random 1,000
+      (seed 7202); {an} with live tags.</td></tr>
+    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: mean Jaccard {jac}; reviews ρ = {rho}. SteamSpy was tested and
+      dropped: it mirrors S1 exactly (Jaccard {ssjac}).</td></tr>
+    <tr><td>Bias</td><td>Reviews count buyers of existing games, not unmet demand; the ≥10-review floor favours
+      games that got traction; tagging is English-centric.</td></tr>
+  </table></section>
+  <section><h2><span class="n">4</span>Graph construction</h2>
+  <table>
+    <tr><td>Node, edge</td><td>A tag. An edge asserts both tags are among the same game's top-5 tags by votes.</td></tr>
+    <tr><td>Excluded</td><td>Seed “Indie”; tags on &gt;25% of games ({generic}); release-model and adult tags.</td></tr>
+    <tr><td>Weight</td><td><b>NPMI, not raw count.</b> By raw count {raw_touch} of the top-10 edges touch the 5 commonest
+      tags (top: {raw_edge}, {raw_edge_n} games); by NPMI, {npmi_touch}.</td></tr>
+    <tr><td>Window</td><td><b>Top-5 tags, not all 20</b>: the store shows the top tags. With all 20, {k20_n} games
+      carry the winning pair (mostly as minor tags) and its lift falls from {lift}× to {k20_lift}×.</td></tr>
+    <tr><td>Pruning</td><td>Tag on ≥15 games; NPMI ≥ 0.10 and ≥5 shared games. {tags_before} tags →
+      <b>{nodes} nodes, {edges} edges</b>.</td></tr>
+  </table></section>
+</div>
+
+<h2><span class="n">5</span>The picture <span class="muted" style="font-weight:normal">· size = games with tag · colour = median reviews · edge width = NPMI</span></h2>
+<figure><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network"></figure>
+
+<div class="row">
+  <section><h2><span class="n">6</span>Findings</h2><ul>
+    <li><b>{broker} is the main broker</b> (betweenness {bc}, constraint {con}), linking {broker_deg} tags across
+      separate neighbourhoods.</li>
+    <li><b class="hl">White space: {A} × {B}.</b> Only {n_ab} games combine them (chance expects {exp}) and their
+      neighbourhoods barely overlap ({ov}), yet their median game has <b>{med} reviews, {lift}× the cohort's
+      {cmed}</b> (permutation p = {perm}); {hit} are top-decile hits vs 10% overall.</li>
+    <li><b>Crowded vs open.</b> The top-lift pair, {FA} × {FB} ({flift}×), is {fsat}× over-supplied.
+      Ours is #1 at all {cut_n} cutoffs and on S1 tags; lift &gt; 1 in {boot_gt1}/100 bootstraps
+      (90% CI {lo}–{hi}×), but #1 in only {top1}/100: with n = {n_ab}, its <i>rank</i> is fragile.</li>
+  </ul></section>
+  <section><h2><span class="n">7</span>Recommended action</h2><ul>
+    <li><b>Mon 2 Nov 2026:</b> creative director pitches {A} × {B} at greenlight; plan B is the fast follower {FA} × {FB}.</li>
+    <li><b>2 Nov – 11 Dec:</b> 6-week vertical slice. <b>Mon 14 Dec:</b> Steam “Coming Soon” page live with {A} and
+      {B} as its first two tags.</li>
+    <li><b>Fri 15 Jan 2027, go/no-go:</b> ≥1,500 wishlists in 30 days → full production; else plan B and
+      re-run on 2025 releases.</li>
+  </ul>
+  <h2><span class="n">8</span>What would change my mind</h2>
+    <p>Co-occurrence is not causation, and {n_ab} games is a thin base one breakout could carry. If the wishlist test
+    misses or the pair loses its lead on 2025 releases, I switch to plan B ({FA} × {FB}).</p>
+  </section>
+</div>
+</body></html>

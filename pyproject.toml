@@ -1,0 +1,19 @@
+[project]
+name = "steam-tag-whitespace"
+version = "0.1.0"
+description = "MADT7202 mid-term: Steam tag white-space network for an indie studio's next game concept"
+requires-python = ">=3.12"
+dependencies = [
+    "adjusttext>=1.4.0",
+    "ipykernel>=7.4.0",
+    "matplotlib>=3.11.2",
+    "nbconvert>=7.17.2",
+    "nbformat>=5.11.1",
+    "networkx>=3.7",
+    "numpy>=2.5.4",
+    "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
+    "pypdf>=6.20.1",
+    "requests>=2.34.2",
+    "scipy>=1.18.1",
+]

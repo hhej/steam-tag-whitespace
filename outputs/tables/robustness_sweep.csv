@@ -1,0 +1,16 @@
+param,rank
+"NPMI>=0.05, co>=5",1.0
+"NPMI>=0.05, co>=10",1.0
+"NPMI>=0.1, co>=5",1.0
+"NPMI>=0.1, co>=10",1.0
+"NPMI>=0.15, co>=5",1.0
+"NPMI>=0.15, co>=10",1.0
+"NPMI>=0.2, co>=5",1.0
+"NPMI>=0.2, co>=10",1.0
+K=5,1.0
+K=10,
+K=20,
+generic>20%,
+generic>25%,1.0
+generic>35%,3.0
+S1 tags (snapshot),1.0

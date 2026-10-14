@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+data/external/
+.claude/
+.DS_Store
+MADT7202_*.pdf
