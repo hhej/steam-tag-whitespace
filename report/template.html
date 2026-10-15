@@ -62,7 +62,7 @@
 <div class="fig-note pick">#1: {A} ×<br>{B}: no edge<br>{n_ab} games (expected {exp}) · {lift}× median reviews</div>
 <div class="fig-note planb">#2: {PA} × {PB}: no edge<br>{pbn} games (expected {pbexp})<br>{pblift}× median reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
-<figcaption><b>First-Person and Multiplayer connect only through {bridge}: {hops} steps apart, {hops_wo} without it.</b> Shown: {fig_nodes} of {nodes} tags. Dashed = pair with no edge; node size = games; line width = NPMI.</figcaption></figure>
+<figcaption><b>First-Person and Multiplayer have no direct link; the shortest route between them goes through {bridge} ({hops} links). Without it, the shortest route is {hops_wo} links.</b> {fig_nodes} of {nodes} tags; size = games.</figcaption></figure>
 <p class="rule"><i>Expected</i> = games that would carry both tags if developers picked them independently (A's games × B's
 games ÷ {pop}); <i>crowding</i> = games ÷ expected, above 1.5 = overdone; <i>median reviews</i> = the typical game's reviews. <b>Rule:</b> of pairs on ≥{min_pair} games, keep crowding ≤ 1.5 and ≤20% shared neighbours; rank by median reviews.</p>
 <table class="pairs">
