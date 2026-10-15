@@ -16,10 +16,17 @@ td { border-top: 0.5px solid #d6d5cf; padding: 0.3mm 1mm; vertical-align: top; }
 td:first-child { font-weight: 600; color: #1f2a6b; white-space: nowrap; width: 1%; }
 tr:last-child td { border-bottom: 0.5px solid #d6d5cf; }
 figure { margin: 1mm 0 0; text-align: center; }
-figure img { width: 100%; display: block; }
+figure img { width: 88%; display: block; margin: 0 auto; }
 ul { margin: 0; padding-left: 4.2mm; }
 li { margin-bottom: 0.4mm; }
 b.hl { color: #c4501f; }
 .muted { color: #52514e; }
 .sub a { white-space: nowrap; }
 figcaption { font-size: 10pt; color: #52514e; text-align: left; margin-top: 0.4mm; }
+table.pairs { margin-top: 1mm; }
+table.pairs th { font-weight: 600; color: #1f2a6b; text-align: right; padding: 0.3mm 1mm; border-bottom: 0.5px solid #d6d5cf; }
+table.pairs td { text-align: right; }
+table.pairs th:first-child, table.pairs td:first-child { text-align: left; }
+table.pairs td:first-child { font-weight: 600; color: #1b1b1b; border-left: 3px solid transparent; padding-left: 1.5mm; }
+table.pairs tr.pick td:first-child { border-left-color: #eb6834; }
+table.pairs tr.planb td:first-child { border-left-color: #7a4fc9; }

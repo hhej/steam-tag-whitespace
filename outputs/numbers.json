@@ -4,36 +4,37 @@
   "analysed": 996,
   "fetched_from": "2026-10-14",
   "fetched_to": "2026-10-14",
-  "median_reviews": 51.0,
+  "median_reviews": 40.0,
   "tri_top5_jaccard": 0.8692269076305221,
   "tri_top5_identical": 0.7108433734939759,
   "tri_reviews_spearman": 0.977434272549861,
   "review_growth": 1.2537861926262186,
   "steamspy_vs_s1_jaccard": 1.0,
   "steamspy_vs_s1_reviews_equal": 1.0,
-  "indie_share": 0.6054216867469879,
+  "indie_share": 0.5980866505388168,
   "generic": [
     "Singleplayer",
     "Adventure",
-    "Casual",
     "Action",
+    "Casual",
     "2D",
     "3D",
     "Atmospheric",
-    "Exploration",
-    "Simulation",
-    "First-Person"
+    "Exploration"
   ],
-  "n_generic": 10,
-  "nodes": 98,
-  "edges": 249,
-  "tags_before": 391,
+  "n_generic": 8,
+  "nodes": 81,
+  "edges": 177,
+  "tags_before": 439,
+  "min_tag": 136,
+  "min_co": 45,
+  "min_pair": 73,
   "top5_common": [
     "Adventure",
     "Casual",
     "Action",
-    "Simulation",
-    "Puzzle"
+    "Puzzle",
+    "Simulation"
   ],
   "raw_top10_touch_common": 9,
   "npmi_top10_touch_common": 0,
@@ -41,77 +42,112 @@
     "Action",
     "Adventure"
   ],
-  "raw_top_edge_count": 66,
-  "k20_n": 72,
-  "k20_lift": 1.9215686274509804,
-  "k20_sat": 1.230220270363,
-  "boot_top1": 3,
-  "boot_top3": 15,
-  "boot_lift_gt1": 99,
-  "boot_lift_p05": 1.6425416666666666,
-  "boot_lift_p95": 39.179793281653744,
-  "perm_p": 0.0211,
+  "raw_top_edge_count": 528,
+  "top10_lift_crowded": 9,
+  "k20_n": 200,
+  "k20_lift": 2.4625,
+  "k20_sat": 0.9234446699858143,
+  "s2_pair_n": 6,
+  "s2_pair_lift": 1.5784313725490196,
+  "boot_below_floor": 42,
+  "boot_outranked": 5,
+  "boot_planb_top1": 15,
+  "boot_either_top1": 51,
+  "boot_top1": 36,
+  "boot_top3": 40,
+  "boot_lift_gt1": 100,
+  "boot_sat_over": 17,
+  "boot_lift_p05": 1.875,
+  "boot_lift_p95": 7.75,
+  "perm_p": 0.0,
+  "perm_draws": 10000,
   "best": [
-    "Puzzle",
-    "Story Rich"
+    "Horror",
+    "Multiplayer"
   ],
   "runner": [
     "Pixel Graphics",
-    "Strategy"
+    "RPG"
   ],
-  "best_n": 9,
-  "best_expected": 11.397590361445783,
-  "best_sat": 0.7896405919661734,
-  "best_median": 302.0,
-  "best_lift": 5.921568627450981,
-  "best_hit": 0.2222222222222222,
-  "best_overlap": 0.1,
-  "hit_cut": 940.0,
-  "runner_lift": 5.549019607843137,
-  "runner_n": 11,
-  "fallback": [
-    "Management",
-    "Strategy"
-  ],
-  "fallback_lift": 12.980392156862745,
-  "fallback_n": 9,
-  "fallback_sat": 2.3539915966386555,
-  "top_broker": "Puzzle",
-  "top_broker_bc": 0.17289518900343642,
-  "top_broker_constraint": 0.13055389913280455,
-  "top_broker_degree": 14,
+  "pick": {
+    "pair": [
+      "Horror",
+      "Multiplayer"
+    ],
+    "n": 75,
+    "expected": 54.721794589839455,
+    "sat": 1.3705690860863275,
+    "overlap": 0.08333333333333333,
+    "median": 124.0,
+    "lift": 3.1,
+    "hit": 0.24,
+    "edge": false
+  },
+  "planb": {
+    "pair": [
+      "Pixel Graphics",
+      "RPG"
+    ],
+    "n": 133,
+    "expected": 105.76380030789531,
+    "sat": 1.257519109684181,
+    "overlap": 0.0,
+    "median": 70.0,
+    "lift": 1.75,
+    "hit": 0.12781954887218044,
+    "edge": false
+  },
+  "crowd": {
+    "pair": [
+      "Management",
+      "Simulation"
+    ],
+    "n": 121,
+    "expected": 31.760281504288542,
+    "sat": 3.8097899095655543,
+    "overlap": 0.07692307692307693,
+    "median": 127.0,
+    "lift": 3.175,
+    "hit": 0.23140495867768596,
+    "edge": true
+  },
+  "hit_cut": 726.0,
   "sweep": [
     {
-      "param": "NPMI>=0.05, co>=5",
+      "param": "NPMI>=0.05, co>=0.5%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.05, co>=10",
+      "param": "NPMI>=0.05, co>=1.0%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.1, co>=5",
+      "param": "NPMI>=0.1, co>=0.5%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.1, co>=10",
+      "param": "NPMI>=0.1, co>=1.0%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.15, co>=5",
+      "param": "NPMI>=0.15, co>=0.5%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.15, co>=10",
+      "param": "NPMI>=0.15, co>=1.0%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.2, co>=5",
+      "param": "NPMI>=0.2, co>=0.5%",
       "rank": 1.0
     },
     {
-      "param": "NPMI>=0.2, co>=10",
+      "param": "NPMI>=0.2, co>=1.0%",
       "rank": 1.0
+    },
+    {
+      "param": "K=3",
+      "rank": NaN
     },
     {
       "param": "K=5",
@@ -119,11 +155,11 @@
     },
     {
       "param": "K=10",
-      "rank": NaN
+      "rank": 11.0
     },
     {
       "param": "K=20",
-      "rank": NaN
+      "rank": 81.0
     },
     {
       "param": "generic>20%",
@@ -135,15 +171,23 @@
     },
     {
       "param": "generic>35%",
-      "rank": 3.0
+      "rank": NaN
     },
     {
-      "param": "S1 tags (snapshot)",
+      "param": "pair>=0.6%",
       "rank": 1.0
+    },
+    {
+      "param": "pair>=0.8%",
+      "rank": 1.0
+    },
+    {
+      "param": "pair>=1.0%",
+      "rank": NaN
     }
   ],
-  "eligible": 24,
-  "scored_pairs": 148,
+  "eligible": 30,
+  "scored_pairs": 136,
   "fig_nodes": 16,
-  "fig_edges": 18
+  "fig_edges": 22
 }

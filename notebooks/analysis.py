@@ -1,15 +1,14 @@
 # %% [markdown]
-# # Cozy meets ...? — Steam tag white-space network
+# # Steam tag network: which two-tag concept should an indie studio build next?
 # MADT 7202 mid-term · evidence notebook. Every number on the one-page report is written to
-# `outputs/numbers.json` by this notebook. Rules are fixed in `src/tagnet.py` (pre-registered in `docs/PLAN.md`).
+# `outputs/numbers.json` by this notebook. Rules live in `src/tagnet.py`.
 #
-# **Decision:** which two-tag concept the creative director of a hypothetical 5-person Bangkok indie studio
-# pitches at the next greenlight meeting.
+# **Decision:** which two-tag game concept the creative director of an indie studio builds next.
 #
-# **Sources:** S1 = FronkonGames Steam Games Dataset (MIT) — sampling frame + snapshot tags and reviews;
-# S2 = live Steam store pull (user tags with votes from the app page, review totals from `appreviews`).
-# S2 is primary; S1 is used to triangulate. SteamSpy was also pulled but mirrors S1 exactly (shown below),
-# so it is not an independent source.
+# **Sources:** S1 = FronkonGames Steam Games Dataset (MIT): every game in the cohort, with tag votes and review
+# totals. This is the data the network is built from. S2 = live Steam store pull for a random 1,000 of those games
+# (tags from the app page, review totals from `appreviews`), used to check that S1 is accurate.
+# SteamSpy was also pulled but mirrors S1 exactly (shown below), so it is not an independent source.
 
 # %%
 import json
@@ -31,16 +30,16 @@ OUT = ROOT / "outputs"
 NUM = {}  # every number used on the page
 pd.set_option("display.width", 160)
 
-games = tn.load_games()
-pop = pd.read_csv(ROOT / "data/processed/population.csv")
+cohort = tn.load_cohort()                      # S1: all games, the analysis set
+games = tn.load_games()                        # S2: live pull for the random 1,000, the cross-check set
 games = games[games["s2_tags"].map(len) > 0].reset_index(drop=True)
-NUM.update(population=len(pop), sampled=1000, analysed=len(games),
+NUM.update(population=len(cohort), sampled=1000, analysed=len(games),
            fetched_from=games["fetched"].min()[:10], fetched_to=games["fetched"].max()[:10],
-           median_reviews=float(games["s2_reviews"].median()))
+           median_reviews=float(cohort["reviews"].median()))
 print(NUM)
 
 # %% [markdown]
-# ## 1 · Triangulation: S1 snapshot vs S2 live pull
+# ## 1 · Is S1 accurate? Compare it with the live store (S2) on the random 1,000
 
 # %%
 def jacc(a, b):
@@ -67,7 +66,9 @@ print({k: round(NUM[k], 3) for k in ["tri_top5_jaccard", "tri_top5_identical", "
 # "Indie" is the collection seed. Tags in > 25 % of games are generic (rule fixed in advance).
 
 # %%
-tag_lists = [list(d) for d in games["s2_tags"]]
+dicts = list(cohort["tags"])
+reviews = cohort["reviews"].values
+tag_lists = [list(d) for d in dicts]
 indie_share = np.mean(["Indie" in t for t in tag_lists])
 generic, dfreq = tn.generic_tags(tag_lists, tn.DEFAULTS["generic_df"])
 gen_table = pd.Series(dfreq).sort_values(ascending=False).head(20).rename("doc_freq").to_frame()
@@ -77,16 +78,17 @@ NUM.update(indie_share=float(indie_share), generic=sorted(generic, key=lambda t:
 gen_table.round(3)
 
 # %% [markdown]
-# ## 3 · Graph construction (K = 5 tags per game, NPMI ≥ 0.10, co-occur ≥ 5, tag ≥ 15 games)
+# ## 3 · Graph construction
+# K = 5 tags per game; tag on ≥ 1.5 % of games; edge NPMI ≥ 0.10 and ≥ 0.5 % shared games.
+# (Thresholds are shares of the games analysed, so they mean the same thing at 1,000 or 9,094 games.)
 
 # %%
-reviews = games["s2_reviews"].values
-dicts = list(games["s2_tags"])
 R = tn.run(dicts, reviews)
-G, pairs = R["G"], R["pairs"]
+G, pairs, P = R["G"], R["pairs"], R["params"]
 n_tags_raw = len({t for d in dicts for t in d})
-NUM.update(nodes=G.number_of_nodes(), edges=G.number_of_edges(), tags_before=n_tags_raw)
-print(f"{n_tags_raw} distinct tags before pruning -> {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
+NUM.update(nodes=G.number_of_nodes(), edges=G.number_of_edges(), tags_before=n_tags_raw,
+           min_tag=P["min_tag"], min_co=P["min_co"], min_pair=P["min_pair"])
+print(f"{n_tags_raw} distinct tags before pruning -> {G.number_of_nodes()} nodes, {G.number_of_edges()} edges", P)
 
 # %% [markdown]
 # ### Named alternative (a): raw co-occurrence count instead of NPMI
@@ -96,9 +98,9 @@ print(f"{n_tags_raw} distinct tags before pruning -> {G.number_of_nodes()} nodes
 naive = [[t for t in tags if t not in tn.SEED_TAGS][:5] for tags in tag_lists]
 n_a, n_ab = tn.cooccurrence(naive)
 top5_common = [t for t, _ in n_a.most_common(5)]
-raw_top = sorted(n_ab.items(), key=lambda kv: -kv[1])[:10]
+raw_top = sorted(n_ab.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
 raw_touch = sum(a in top5_common or b in top5_common for (a, b), _ in raw_top)
-npmi_top = sorted(G.edges(data=True), key=lambda e: -e[2]["npmi"])[:10]
+npmi_top = sorted(G.edges(data=True), key=lambda e: (-e[2]["npmi"], e[0], e[1]))[:10]
 npmi_touch = sum(a in top5_common or b in top5_common for a, b, _ in npmi_top)
 NUM.update(top5_common=top5_common, raw_top10_touch_common=raw_touch, npmi_top10_touch_common=npmi_touch,
            raw_top_edge=list(raw_top[0][0]), raw_top_edge_count=raw_top[0][1])
@@ -107,15 +109,9 @@ print("raw-count top-10 edges:", raw_top)
 print("NPMI top-10 edges:", [(a, b, round(d["npmi"], 2)) for a, b, d in npmi_top])
 
 # %% [markdown]
-# ## 4 · Structure: who brokers between neighbourhoods? (betweenness on 1−NPMI distance, Burt constraint)
-
-# %%
-brokers = tn.broker_table(G)
-brokers.to_csv(OUT / "tables/brokers.csv")
-brokers.head(10).round(3)
-
-# %% [markdown]
-# ## 5 · White space: under-supplied pairs that bridge disjoint neighbourhoods and perform
+# ## 4 · Pairs: which combinations perform, and which are already crowded?
+# A pair is eligible if it is not over-supplied (≤ 1.5× the games chance predicts) and its two tags sit in
+# separate neighbourhoods (neighbour overlap ≤ 0.2). Eligible pairs are ranked by lift (median reviews ÷ cohort).
 
 # %%
 pairs.to_csv(OUT / "tables/pairs.csv", index=False)
@@ -124,11 +120,15 @@ print(len(pairs), "scored pairs;", len(elig), "eligible")
 elig.head(10).round(2)
 
 # %%
-estab = pairs[pairs["saturation"] > tn.DEFAULTS["max_sat"]].reset_index(drop=True)  # fallback pool
-estab.head(5).round(2)
+# Crowded comparison: best pair that passes the overlap rule but fails only the crowding rule
+crowded = pairs[(pairs["saturation"] > P["max_sat"]) & (pairs["overlap"] <= P["max_overlap"])].reset_index(drop=True)
+top10 = pairs.head(10)
+NUM.update(top10_lift_crowded=int((top10["saturation"] > P["max_sat"]).sum()))
+print("of the 10 highest-lift pairs,", NUM["top10_lift_crowded"], "are over-supplied")
+crowded.head(5).round(2)
 
 # %% [markdown]
-# ## 6 · Robustness
+# ## 5 · Robustness
 
 # %%
 def rank_of(pair, pairs_df):
@@ -142,15 +142,15 @@ best = tuple(sorted((elig.loc[0, "a"], elig.loc[0, "b"])))
 runner = tuple(sorted((elig.loc[1, "a"], elig.loc[1, "b"])))
 sweep = []
 for cut in [0.05, 0.10, 0.15, 0.20]:
-    for mc in [5, 10]:
-        sweep.append({"param": f"NPMI>={cut}, co>={mc}", "rank": rank_of(best, tn.run(dicts, reviews, npmi_cut=cut, min_co=mc)["pairs"])})
-for k in [5, 10, 20]:
+    for mc in [0.005, 0.01]:
+        sweep.append({"param": f"NPMI>={cut}, co>={mc:.1%}",
+                      "rank": rank_of(best, tn.run(dicts, reviews, npmi_cut=cut, min_co=mc)["pairs"])})
+for k in [3, 5, 10, 20]:
     sweep.append({"param": f"K={k}", "rank": rank_of(best, tn.run(dicts, reviews, k=k)["pairs"])})
 for gdf in [0.20, 0.25, 0.35]:
     sweep.append({"param": f"generic>{gdf:.0%}", "rank": rank_of(best, tn.run(dicts, reviews, generic_df=gdf)["pairs"])})
-s1_ok = games["s1_tags"].map(lambda d: isinstance(d, dict) and len(d) > 0)
-sweep.append({"param": "S1 tags (snapshot)",
-              "rank": rank_of(best, tn.run(list(games.loc[s1_ok, "s1_tags"]), games.loc[s1_ok, "reviews"].values)["pairs"])})
+for mp in [0.006, 0.008, 0.010]:
+    sweep.append({"param": f"pair>={mp:.1%}", "rank": rank_of(best, tn.run(dicts, reviews, min_pair=mp)["pairs"])})
 sweep = pd.DataFrame(sweep)
 p20 = tn.run(dicts, reviews, k=20)["pairs"]
 r20 = p20[(p20.a.isin(best)) & (p20.b.isin(best))].iloc[0]
@@ -159,75 +159,99 @@ sweep.to_csv(OUT / "tables/robustness_sweep.csv", index=False)
 sweep
 
 # %%
+# Second source: the pair's lift on the live-scraped sample (S2 tags and live review counts)
+s2_base = tn.run(list(games["s2_tags"]), games["s2_reviews"].values)["baskets"]
+s2_rev = games["s2_reviews"].values
+s2_has = np.array([set(best) <= set(b) for b in s2_base])
+NUM.update(s2_pair_n=int(s2_has.sum()), s2_pair_lift=float(np.median(s2_rev[s2_has]) / np.median(s2_rev)))
+print("S2 sample:", NUM["s2_pair_n"], "games with the pair, lift", round(NUM["s2_pair_lift"], 2))
+
+# %%
 # Bootstrap: resample games. Rank = is the pair still the top eligible pair? Lift = the pair's games' median
-# reviews / cohort median, computed directly so resamples where n_AB < 8 still count.
+# reviews / cohort median. Saturation = does the pair cross the 1.5x crowding limit in the resample?
 rng = np.random.default_rng(7202)
 has_pair = np.array([set(best) <= set(b) for b in R["baskets"]])
-boot_rank, boot_lift = [], []
+boot_rank, boot_lift, boot_sat, boot_planb = [], [], [], []
 for _ in range(100):
-    i = rng.integers(0, len(games), len(games))
+    i = rng.integers(0, len(cohort), len(cohort))
     pr = tn.run([dicts[j] for j in i], reviews[i])["pairs"]
     boot_rank.append(rank_of(best, pr))
+    boot_planb.append(rank_of(runner, pr))
+    row = pr[(pr.a == best[0]) & (pr.b == best[1])]
+    boot_sat.append(float(row["saturation"].iloc[0]) if len(row) else np.nan)
     r_i, h_i = reviews[i], has_pair[i]
     boot_lift.append(np.median(r_i[h_i]) / np.median(r_i) if h_i.any() else np.nan)
-boot_rank = pd.Series(boot_rank, dtype="float")
-boot_lift = np.array(boot_lift)
+boot_rank, boot_planb = pd.Series(boot_rank, dtype="float"), pd.Series(boot_planb, dtype="float")
+boot_lift, boot_sat = np.array(boot_lift), np.array(boot_sat)
+# why the pair is not #1 in a resample: below the support floor (not scored), over the crowding limit, or outranked
+NUM.update(boot_below_floor=int(np.isnan(boot_sat).sum()),
+           boot_outranked=int(((boot_rank > 1) | (boot_rank.isna() & ~np.isnan(boot_sat) & (boot_sat <= P["max_sat"]))).sum()),
+           boot_planb_top1=int((boot_planb == 1).sum()), boot_either_top1=int(((boot_rank == 1) | (boot_planb == 1)).sum()))
 NUM.update(boot_top1=int((boot_rank == 1).sum()), boot_top3=int((boot_rank <= 3).sum()),
-           boot_lift_gt1=int((boot_lift > 1).sum()),
+           boot_lift_gt1=int((boot_lift > 1).sum()), boot_sat_over=int((boot_sat > P["max_sat"]).sum()),
            boot_lift_p05=float(np.nanpercentile(boot_lift, 5)), boot_lift_p95=float(np.nanpercentile(boot_lift, 95)))
-print({k: NUM[k] for k in ["boot_top1", "boot_top3", "boot_lift_gt1", "boot_lift_p05", "boot_lift_p95"]})
+print({k: NUM[k] for k in ["boot_top1", "boot_top3", "boot_lift_gt1", "boot_sat_over", "boot_below_floor",
+                            "boot_outranked", "boot_planb_top1", "boot_either_top1", "boot_lift_p05", "boot_lift_p95"]})
 
 # %%
 # Permutation test: how often do n random games from the cohort reach the pair's median reviews?
 b0 = elig.loc[0]
 draws = np.array([np.median(rng.choice(reviews, int(b0.n_ab), replace=False)) for _ in range(10000)])
-NUM.update(perm_p=float((draws >= b0.median_reviews).mean()))
+NUM.update(perm_p=float((draws >= b0.median_reviews).mean()), perm_draws=len(draws))
 print("permutation p =", NUM["perm_p"])
 
 # %% [markdown]
-# ## 7 · Record the headline numbers
+# ## 6 · Record the headline numbers
 
 # %%
+def rec(r):
+    return dict(pair=[r.a, r.b], n=int(r.n_ab), expected=float(r.expected), sat=float(r.saturation),
+                overlap=float(r.overlap), median=float(r.median_reviews), lift=float(r.lift), hit=float(r.hit_rate),
+                edge=bool(G.has_edge(r.a, r.b)))
+
 b = elig.loc[0]
-NUM.update(best=list(best), runner=list(runner),
-           best_n=int(b.n_ab), best_expected=float(b.expected), best_sat=float(b.saturation),
-           best_median=float(b.median_reviews), best_lift=float(b.lift), best_hit=float(b.hit_rate),
-           best_overlap=float(b.overlap), hit_cut=float(np.quantile(reviews, 0.9)),
-           runner_lift=float(elig.loc[1, "lift"]), runner_n=int(elig.loc[1, "n_ab"]),
-           fallback=[estab.loc[0, "a"], estab.loc[0, "b"]], fallback_lift=float(estab.loc[0, "lift"]),
-           fallback_n=int(estab.loc[0, "n_ab"]), fallback_sat=float(estab.loc[0, "saturation"]),
-           top_broker=brokers.index[0], top_broker_bc=float(brokers.iloc[0]["betweenness"]),
-           top_broker_constraint=float(brokers.iloc[0]["constraint"]),
-           top_broker_degree=int(brokers.iloc[0]["degree"]),
+NUM.update(best=list(best), runner=list(runner), pick=rec(b), planb=rec(elig.loc[1]), crowd=rec(crowded.loc[0]),
+           hit_cut=float(np.quantile(reviews, 0.9)),
            sweep=sweep.to_dict("records"), eligible=len(elig), scored_pairs=len(pairs))
 (OUT / "numbers.json").write_text(json.dumps(NUM, indent=2, default=str))
-NUM
+pd.DataFrame([NUM["pick"], NUM["planb"], NUM["crowd"]]).round(2)
 
 # %% [markdown]
-# ## 8 · The figure: the 16 most-used tags plus the recommended pair.
-# Labels are placed only where they touch no other label, node or edge; the cell fails if that is impossible.
+# ## 7 · The figure: the neighbourhoods of the recommended pair and plan B
+# Node colour = median reviews of games with the tag. Labels are placed only where they touch no other label,
+# node or edge; the cell fails if that is impossible.
 
 # %%
 import matplotlib.patheffects as pe
+from matplotlib.colors import LinearSegmentedColormap, LogNorm
 
-INK, EDGE, NODE, ACCENT = "#0b0b0b", "#d3d2cc", "#9a9993", "#eb6834"
+INK, EDGE, ACCENT, PLANB = "#0b0b0b", "#d3d2cc", "#eb6834", "#7a4fc9"
+BLUES = LinearSegmentedColormap.from_list("seq", ["#cfe3f7", "#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
 HALO = [pe.withStroke(linewidth=2.2, foreground="white")]
 
-broker = brokers.index[0]
-focus = set(best) | {broker}
-show = set(sorted(G, key=lambda t: (-G.nodes[t]["n"], t))[:16]) | focus
+tag_med = {t: float(np.median(reviews[[t in bk for bk in R["baskets"]]])) for t in G}
+focus = set(best) | set(runner)
+# each focus tag's 2 strongest neighbours (by NPMI), plus the shortest paths that link the four focus tags
+show = set(focus)
+for t in sorted(focus):
+    show |= set(sorted(G[t], key=lambda u: (-G[t][u]["npmi"], u))[:2])
+for u, v in [best, runner, (best[0], runner[0])]:
+    show |= set(nx.shortest_path(G, u, v, weight="dist"))
 H = G.subgraph(show).copy()
-H = H.subgraph(max(nx.connected_components(H), key=len) | focus).copy()
+assert nx.is_connected(H)
 # rebuild in sorted order: subgraph views iterate a Python set, which would make the layout hash-seed dependent
 H2 = nx.Graph()
 H2.add_nodes_from((t, G.nodes[t]) for t in sorted(H))
 H2.add_edges_from(sorted((*sorted((u, v)), d) for u, v, d in H.edges(data=True)))
 H = H2
 kk = nx.kamada_kawai_layout(H, weight="dist")
-sizes = {t: 25 + 1.6 * H.nodes[t]["n"] for t in H}
-label = {t: t for t in H}
-label[broker] = f"{broker} (betweenness {brokers.iloc[0]['betweenness']:.2f})"
-msg = f"{best[0]} × {best[1]}: no edge\n{int(b.n_ab)} games (exp. {b.expected:.0f}) · {b.lift:.1f}× median reviews"
+nmax = max(H.nodes[t]["n"] for t in H)
+sizes = {t: 40 + 360 * H.nodes[t]["n"] / nmax for t in H}
+norm = LogNorm(vmin=min(tag_med[t] for t in H), vmax=max(tag_med[t] for t in H))
+ring = {t: ACCENT for t in best} | {t: PLANB for t in runner}
+pk = NUM["pick"]
+msg = (f"{best[0]} × {best[1]}{'' if pk['edge'] else ': no edge'}\n"
+       f"{pk['n']} games (exp. {pk['expected']:.0f}) · {pk['lift']:.1f}× median reviews")
 
 
 def hit(a, c, pad=2):
@@ -247,15 +271,18 @@ def draw(angle, flip):
     xy = (xy - xy.min(0)) / (xy.max(0) - xy.min(0))  # stretch to the figure's aspect ratio
     pos = {t: (x * 2.4, y) for t, (x, y) in zip(H, xy)}
 
-    fig, ax = plt.subplots(figsize=(7.6, 2.9), dpi=300)
-    ax.set_xlim(-0.3, 2.7); ax.set_ylim(-0.1, 1.1); ax.axis("off")
-    nx.draw_networkx_edges(H, pos, ax=ax, width=[0.5 + 3.0 * d["npmi"] for _, _, d in H.edges(data=True)],
+    fig, ax = plt.subplots(figsize=(7.6, 3.0), dpi=300)
+    ax.set_xlim(-0.3, 2.7); ax.set_ylim(-0.1, 1.25); ax.axis("off")  # top strip kept free for the colour key
+    nx.draw_networkx_edges(H, pos, ax=ax, width=[0.3 + 6.0 * d["npmi"] ** 1.5 for _, _, d in H.edges(data=True)],
                            edge_color=EDGE)
     nx.draw_networkx_nodes(H, pos, ax=ax, nodelist=list(H), node_size=[sizes[t] for t in H],
-                           node_color=[ACCENT if t in best else NODE for t in H], linewidths=0.8, edgecolors="white")
-    (x1, y1), (x2, y2) = pos[best[0]], pos[best[1]]
-    ax.plot([x1, x2], [y1, y2], ls=(0, (4, 3)), color=ACCENT, lw=1.8, zorder=0.5)
-
+                           node_color=[tag_med[t] for t in H], cmap=BLUES, vmin=norm.vmin, vmax=norm.vmax,
+                           linewidths=[2.4 if t in ring else 0.8 for t in H],
+                           edgecolors=[ring.get(t, "white") for t in H])
+    pairs_drawn = [(best, ACCENT), (runner, PLANB)]
+    for (u, v), col in pairs_drawn:
+        (xa, ya), (xb, yb) = pos[u], pos[v]
+        ax.plot([xa, xb], [ya, yb], ls=(0, (4, 3)), color=col, lw=1.8, zorder=0.5)
     fig.canvas.draw()
     rend = fig.canvas.get_renderer()
     frame = ax.get_window_extent(rend)
@@ -265,8 +292,27 @@ def draw(angle, flip):
         r = np.sqrt(sizes[t]) / 2 * fig.dpi / 72
         cx, cy = px(pos[t])
         nodes[t] = (cx - r, cy - r, cx + r, cy + r)
-    segs = [(pos[u], pos[v]) for u, v in H.edges()] + [(pos[best[0]], pos[best[1]])]
+    segs = [(pos[u], pos[v]) for u, v in H.edges()] + [(pos[u], pos[v]) for (u, v), _ in pairs_drawn]
     edge_px = np.vstack([px(np.linspace(p, q, 40)) for p, q in segs])
+
+    # node colour scale: a small horizontal bar in whichever corner is clear of nodes and edges
+    for corner in [(0.80, 0.95), (0.01, 0.95), (0.41, 0.95)]:
+        cax = ax.inset_axes([corner[0], corner[1], 0.18, 0.025])
+        cb = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=BLUES), cax=cax, orientation="horizontal")
+        ticks = [t for t in [20, 30, 50, 100, 200, 500] if norm.vmin <= t <= norm.vmax]
+        cb.set_ticks(ticks, labels=[str(t) for t in ticks]); cb.ax.minorticks_off()
+        cb.ax.tick_params(labelsize=6.5, length=2, pad=1)
+        cb.outline.set_visible(False)
+        cax.set_title("median reviews of games with the tag", fontsize=6.5, pad=2)
+        cbx = cax.get_tightbbox(rend)
+        cbox = (cbx.x0, cbx.y0, cbx.x1, cbx.y1)
+        if (cbox[0] >= frame.x0 and cbox[2] <= frame.x1 and not inside_pts(edge_px, cbox)
+                and not any(hit(cbox, nb) for nb in nodes.values())):
+            break
+        cax.remove()
+    else:
+        return fig, 99
+    nodes["_colourbar"] = cbox
     placed = {}
 
     def free(box, own=None, edges=True):
@@ -284,7 +330,7 @@ def draw(angle, flip):
         done = False
         for edges in (True, False):  # prefer a spot clear of edges; never accept one on a label or node
             for dx, dy, ha, va in cands:
-                txt = ax.annotate(label[t], pos[t], xytext=(dx, dy), textcoords="offset points", ha=ha, va=va,
+                txt = ax.annotate(t, pos[t], xytext=(dx, dy), textcoords="offset points", ha=ha, va=va,
                                   fontsize=8.0, color=INK, fontweight="bold" if t in focus else "normal",
                                   path_effects=HALO)
                 e = txt.get_window_extent(rend)
@@ -299,8 +345,9 @@ def draw(angle, flip):
         if not done:
             return fig, 99
 
-    # call-out: nearest spot to the dashed line clear of labels, nodes and edges; leader must not cross labels
-    mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+    # call-out: nearest spot to the recommended pair's line clear of labels, nodes and edges
+    (xa, ya), (xb, yb) = pos[best[0]], pos[best[1]]
+    mx, my = (xa + xb) / 2, (ya + yb) / 2
     for d in [8, 20, 35, 50, 70, 90, 120, 150]:
         for ang in range(0, 360, 30):
             dx, dy = d * np.cos(np.radians(ang)), d * np.sin(np.radians(ang))
@@ -342,7 +389,7 @@ NUM.update(fig_nodes=H.number_of_nodes(), fig_edges=H.number_of_edges())
 plt.show()
 
 # %% [markdown]
-# ## 9 · Sanity checks (fail loudly)
+# ## 8 · Sanity checks (fail loudly)
 
 # %%
 assert "Indie" not in G, "seed tag leaked into the graph"
@@ -351,5 +398,7 @@ assert not (set(G) & tn.NON_DESIGN), "non-design tag leaked into the graph"
 assert "Indie" not in best and not (set(best) & set(NUM["generic"])), "recommended pair is an artifact"
 assert NUM["nodes"] == G.number_of_nodes() and NUM["edges"] == G.number_of_edges()
 assert NUM["analysed"] >= 950, "too many games missing live data"
+assert NUM["population"] > 9000, "cohort incomplete"
 assert NUM["steamspy_vs_s1_jaccard"] > 0.99 and NUM["tri_top5_jaccard"] < 0.99, "S2 should differ from S1, SteamSpy should not"
+assert set(best).isdisjoint(runner) or best != runner
 print("all checks passed")

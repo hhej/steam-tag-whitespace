@@ -20,8 +20,9 @@ NON_DESIGN = {"Early Access", "Free to Play", "Sexual Content", "Nudity", "NSFW"
               "Video Production", "Animation & Modeling", "Photo Editing", "Web Publishing",
               "Education", "Software Training", "Accounting"}
 
-DEFAULTS = dict(k=5, generic_df=0.25, min_tag=15, npmi_cut=0.10, min_co=5,
-                min_pair=8, max_sat=1.5, max_overlap=0.2)
+# min_tag, min_co, min_pair below 1 are shares of the games analysed (1.5%, 0.5%, 0.8% = 15, 5, 8 per 1,000 games)
+DEFAULTS = dict(k=5, generic_df=0.25, min_tag=0.015, npmi_cut=0.10, min_co=0.005,
+                min_pair=0.008, max_sat=1.5, max_overlap=0.2)
 
 
 # ---------------------------------------------------------------- loading
@@ -68,6 +69,15 @@ def load_games():
         t["s1_tags"] = t["tags"].map(lambda s: dict(sorted(parse_tagstr(s).items(), key=lambda kv: -kv[1])))
         games = games.merge(t[["appID", "s1_tags"]], on="appID", how="left")
     return games
+
+
+def load_cohort():
+    """Every game in the cohort with its S1 (FronkonGames snapshot) tag votes and review total."""
+    pop = pd.read_csv(ROOT / "data/processed/population.csv")
+    t = pd.read_csv(ROOT / "data/processed/s1_tags.csv")
+    t["tags"] = t["tags"].map(lambda s: dict(sorted(parse_tagstr(s).items(), key=lambda kv: -kv[1])))
+    c = pop.merge(t, on="appID", how="inner")
+    return c[c["tags"].map(len) > 0].reset_index(drop=True)
 
 
 # ---------------------------------------------------------------- tag cleaning
@@ -162,6 +172,9 @@ def pair_table(baskets, reviews, G, p):
 def run(tag_dicts, reviews, **kw):
     """Full pipeline for one parameter setting. Returns graph, brokers, pair table, generic set."""
     p = {**DEFAULTS, **kw}
+    for key in ("min_tag", "min_co", "min_pair"):
+        if p[key] < 1:
+            p[key] = round(p[key] * len(tag_dicts))
     generic, _ = generic_tags([list(d) for d in tag_dicts], p["generic_df"])
     baskets = top_k_tags([list(d) for d in tag_dicts], p["k"], generic)
     G, _, _ = build_graph(baskets, p["min_tag"], p["npmi_cut"], p["min_co"])

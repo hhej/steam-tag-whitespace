@@ -10,7 +10,7 @@
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
     <p>The creative director of an indie studio decides which two-tag game concept to build next. If no pair had
-    passed the test below, they would pick the best-performing crowded pair, {FA} × {FB}.</p></section>
+    passed the tests below, they would pick a proven but crowded pair such as {CA} × {CB}.</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
     <p>Tag counts show which tags are common. They cannot show which two tags sit in separate parts of the tag
     network yet do well when combined; that needs each tag's neighbours.</p></section>
@@ -19,15 +19,13 @@
 <div class="row">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames Steam Games Dataset (Hugging Face). S2 Steam store pages and review API.</td></tr>
-    <tr><td>How obtained</td><td>S1 downloaded. S2 scraped {fetched}, 1 request per 1.5 s.</td></tr>
-    <tr><td>Legal basis</td><td>S1 MIT licence. Steam robots.txt allows /app/ and /appreviews/. Game-level data only,
-      no personal data.</td></tr>
-    <tr><td>Period</td><td>Indie games released 1 Jan 2023 – 31 Dec 2024.</td></tr>
-    <tr><td>Volume</td><td>{pop} games with ≥10 reviews → random 1,000 (seed 7202); {an} analysed.</td></tr>
-    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard {jac}; review counts ρ = {rho}. SteamSpy dropped (copy of S1).</td></tr>
-    <tr><td>Bias</td><td>The ≥10-review floor favours games that sold. Reviews count buyers of existing games,
-      not unmet demand.</td></tr>
+    <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
+    <tr><td>Obtained</td><td>S1 download (snapshot Sep 2025). S2 scraped {fetched}: random 1,000 (seed 7202), 1 request / 1.5 s.</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence. robots.txt allows /app/, /appreviews/. No personal data.</td></tr>
+    <tr><td>Period</td><td>Released 1 Jan 2023 – 31 Dec 2024.</td></tr>
+    <tr><td>Volume</td><td>S1: all {pop} games with ≥10 reviews (the network). S2: {an} (the check).</td></tr>
+    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard {jac}; reviews ρ = {rho}.</td></tr>
+    <tr><td>Bias</td><td>The review floor favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
@@ -35,37 +33,40 @@
     <tr><td>Edge</td><td>Both tags are in the same game's top 5 tags by votes.</td></tr>
     <tr><td>Weight</td><td>NPMI. With raw counts, {raw_touch} of the top-10 edges involve the 5 most common tags;
       with NPMI, {npmi_touch}.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags, because the store page shows the top tags. With all 20 tags, {k20_n} games
-      carry the pair and its lift drops from {lift}× to {k20_lift}×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie” (the seed, on every game); tags on &gt;25% of games ({generic}); release-model
-      and adult tags.</td></tr>
-    <tr><td>Pruning</td><td>Tag on ≥15 games; edge NPMI ≥ 0.10 and ≥5 shared games.</td></tr>
-    <tr><td>Size</td><td>{tags_before} tags → {nodes} nodes, {edges} edges. The figure shows {fig_nodes}.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20 tags, {k20_n} games carry the pair, mostly as minor tags; lift {lift}× → {k20_lift}×.</td></tr>
+    <tr><td>Excluded</td><td>“Indie” (the seed); tags on &gt;25% of games ({generic}); release-model and adult tags.</td></tr>
+    <tr><td>Pruning</td><td>Tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co});
+      pairs scored if ≥0.8% ({min_pair}).</td></tr>
+    <tr><td>Size</td><td>{tags_before} tags → {nodes} nodes, {edges} edges.</td></tr>
   </table></section>
 </div>
 
 <h2><span class="n">5</span>The picture</h2>
 <figure><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
-<figcaption>Node size = games with the tag · edge width = NPMI · dashed = recommended pair (no edge).</figcaption></figure>
+<figcaption>{fig_nodes} of {nodes} tags. Orange = recommended, purple = plan B, dashed = no edge. Size = games; width = NPMI.</figcaption></figure>
+<table class="pairs">
+  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Overlap</th><th>Median reviews</th>
+    <th>Lift</th><th>Top 10%</th></tr>
+  {rows}
+</table>
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li>{broker} has the highest betweenness ({bc}) and links {broker_deg} tags from different parts of the network.</li>
-    <li><b>{A} × {B}</b>: {n_ab} games (expected {exp}), no edge between them, neighbour overlap {ov}. Their median
-      game has {med} reviews, {lift}× the cohort median of {cmed} (permutation p = {perm}).</li>
-    <li>{FA} × {FB} has the highest lift ({flift}×) but already has {fsat}× more games than expected.
-      {A} × {B} stays #1 at all {cut_n} pruning cutoffs and on S1 tags. Lift is above 1 in {boot_gt1}/100
-      bootstraps, but the pair is #1 in only {top1}/100 because only {n_ab} games support it.</li>
+    <li><b>{A} × {B}</b> has no edge; the two tags share {ov} of neighbours, linked only via Online Co-Op.
+      Yet its median game gets {lift}× the cohort's {cmed} reviews ({perm}).</li>
+    <li>{top10_crowded} of the 10 highest-lift pairs are crowded, e.g. {CA} × {CB} ({csat}× chance).</li>
+    <li>#1 at all {cut_n} NPMI cutoffs. Lift &gt; 1 in {boot_gt1}/100 bootstraps (90% CI {lo}–{hi}×) and on S2
+      ({s2n} games, {s2lift}×). #1 in {top1}/100; in {floor} it dips under the {min_pair}-game floor.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Pitch {A} × {B} at the next greenlight meeting, with {FA} × {FB} as plan B.</li>
-    <li>Build a prototype and open a Steam Coming Soon page with {A} and {B} as its first two tags.</li>
-    <li>Re-run this analysis on 2025 releases before full production. If the pair drops out of the top 3,
-      switch to plan B.</li>
+    <li>Week 0: pitch {A} × {B} at greenlight; plan B {PA} × {PB}.</li>
+    <li>Weeks 1–6: prototype. Week 7: Steam Coming Soon page, {A} and {B} as first tags.</li>
+    <li>Before full production: re-run on 2025 releases; switch to plan B if the pair is over 1.5×
+      crowded or out of the top 3.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>Only {n_ab} games support the pair, so one hit game could explain the lift. If the pair drops out of the
-    top 3 on 2025 releases, I switch to {FA} × {FB}.</p>
+    <p>The pair is {sat}× as common as chance, near the 1.5× limit (crossed in {over}/100 resamples). If 2025
+    releases push it past 1.5×, I switch to {PA} × {PB}.</p>
   </section>
 </div>
 </body></html>

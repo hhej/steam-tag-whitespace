@@ -1,16 +1,16 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Which Steam tag pair should an indie studio build next? Puzzle × Story Rich</title>
+<html lang="en"><head><meta charset="utf-8"><title>Which Steam tag pair should an indie studio build next? Horror × Multiplayer</title>
 <link rel="stylesheet" href="style.css"></head>
 <body>
 <header>
-  <h1>Which Steam tag pair should an indie studio build next? Puzzle × Story Rich</h1>
+  <h1>Which Steam tag pair should an indie studio build next? Horror × Multiplayer</h1>
   <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="https://github.com/hhej/steam-tag-whitespace">github.com/hhej/steam-tag-whitespace</a></div>
 </header>
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
     <p>The creative director of an indie studio decides which two-tag game concept to build next. If no pair had
-    passed the test below, they would pick the best-performing crowded pair, Management × Strategy.</p></section>
+    passed the tests below, they would pick a proven but crowded pair such as Management × Simulation.</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
     <p>Tag counts show which tags are common. They cannot show which two tags sit in separate parts of the tag
     network yet do well when combined; that needs each tag's neighbours.</p></section>
@@ -19,15 +19,13 @@
 <div class="row">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames Steam Games Dataset (Hugging Face). S2 Steam store pages and review API.</td></tr>
-    <tr><td>How obtained</td><td>S1 downloaded. S2 scraped 2026-10-14, 1 request per 1.5 s.</td></tr>
-    <tr><td>Legal basis</td><td>S1 MIT licence. Steam robots.txt allows /app/ and /appreviews/. Game-level data only,
-      no personal data.</td></tr>
-    <tr><td>Period</td><td>Indie games released 1 Jan 2023 – 31 Dec 2024.</td></tr>
-    <tr><td>Volume</td><td>9,094 games with ≥10 reviews → random 1,000 (seed 7202); 996 analysed.</td></tr>
-    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard 0.87; review counts ρ = 0.98. SteamSpy dropped (copy of S1).</td></tr>
-    <tr><td>Bias</td><td>The ≥10-review floor favours games that sold. Reviews count buyers of existing games,
-      not unmet demand.</td></tr>
+    <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
+    <tr><td>Obtained</td><td>S1 download (snapshot Sep 2025). S2 scraped 2026-10-14: random 1,000 (seed 7202), 1 request / 1.5 s.</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence. robots.txt allows /app/, /appreviews/. No personal data.</td></tr>
+    <tr><td>Period</td><td>Released 1 Jan 2023 – 31 Dec 2024.</td></tr>
+    <tr><td>Volume</td><td>S1: all 9,094 games with ≥10 reviews (the network). S2: 996 (the check).</td></tr>
+    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard 0.87; reviews ρ = 0.98.</td></tr>
+    <tr><td>Bias</td><td>The review floor favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
@@ -35,37 +33,40 @@
     <tr><td>Edge</td><td>Both tags are in the same game's top 5 tags by votes.</td></tr>
     <tr><td>Weight</td><td>NPMI. With raw counts, 9 of the top-10 edges involve the 5 most common tags;
       with NPMI, 0.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags, because the store page shows the top tags. With all 20 tags, 72 games
-      carry the pair and its lift drops from 5.9× to 1.9×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie” (the seed, on every game); tags on &gt;25% of games (Singleplayer, Adventure, Casual, Action, 2D, 3D, Atmospheric, Exploration, Simulation, First-Person); release-model
-      and adult tags.</td></tr>
-    <tr><td>Pruning</td><td>Tag on ≥15 games; edge NPMI ≥ 0.10 and ≥5 shared games.</td></tr>
-    <tr><td>Size</td><td>391 tags → 98 nodes, 249 edges. The figure shows 16.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20 tags, 200 games carry the pair, mostly as minor tags; lift 3.1× → 2.5×.</td></tr>
+    <tr><td>Excluded</td><td>“Indie” (the seed); tags on &gt;25% of games (Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration); release-model and adult tags.</td></tr>
+    <tr><td>Pruning</td><td>Tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45);
+      pairs scored if ≥0.8% (73).</td></tr>
+    <tr><td>Size</td><td>439 tags → 81 nodes, 177 edges.</td></tr>
   </table></section>
 </div>
 
 <h2><span class="n">5</span>The picture</h2>
 <figure><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
-<figcaption>Node size = games with the tag · edge width = NPMI · dashed = recommended pair (no edge).</figcaption></figure>
+<figcaption>16 of 81 tags. Orange = recommended, purple = plan B, dashed = no edge. Size = games; width = NPMI.</figcaption></figure>
+<table class="pairs">
+  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Overlap</th><th>Median reviews</th>
+    <th>Lift</th><th>Top 10%</th></tr>
+  <tr class="pick"><td>Horror × Multiplayer</td><td>75 (55)</td><td>1.4×</td><td>0.08</td><td>124</td><td>3.1×</td><td>24%</td></tr><tr class="planb"><td>Pixel Graphics × RPG</td><td>133 (106)</td><td>1.3×</td><td>0.00</td><td>70</td><td>1.8×</td><td>13%</td></tr><tr class=""><td>Management × Simulation</td><td>121 (32)</td><td>3.8×</td><td>0.08</td><td>127</td><td>3.2×</td><td>23%</td></tr>
+</table>
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li>Puzzle has the highest betweenness (0.17) and links 14 tags from different parts of the network.</li>
-    <li><b>Puzzle × Story Rich</b>: 9 games (expected 11), no edge between them, neighbour overlap 0.10. Their median
-      game has 302 reviews, 5.9× the cohort median of 51 (permutation p = 0.021).</li>
-    <li>Management × Strategy has the highest lift (13.0×) but already has 2.4× more games than expected.
-      Puzzle × Story Rich stays #1 at all 8 pruning cutoffs and on S1 tags. Lift is above 1 in 99/100
-      bootstraps, but the pair is #1 in only 3/100 because only 9 games support it.</li>
+    <li><b>Horror × Multiplayer</b> has no edge; the two tags share 8% of neighbours, linked only via Online Co-Op.
+      Yet its median game gets 3.1× the cohort's 40 reviews (p &lt; 0.001).</li>
+    <li>9 of the 10 highest-lift pairs are crowded, e.g. Management × Simulation (3.8× chance).</li>
+    <li>#1 at all 8 NPMI cutoffs. Lift &gt; 1 in 100/100 bootstraps (90% CI 1.9–7.8×) and on S2
+      (6 games, 1.6×). #1 in 36/100; in 42 it dips under the 73-game floor.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Pitch Puzzle × Story Rich at the next greenlight meeting, with Management × Strategy as plan B.</li>
-    <li>Build a prototype and open a Steam Coming Soon page with Puzzle and Story Rich as its first two tags.</li>
-    <li>Re-run this analysis on 2025 releases before full production. If the pair drops out of the top 3,
-      switch to plan B.</li>
+    <li>Week 0: pitch Horror × Multiplayer at greenlight; plan B Pixel Graphics × RPG.</li>
+    <li>Weeks 1–6: prototype. Week 7: Steam Coming Soon page, Horror and Multiplayer as first tags.</li>
+    <li>Before full production: re-run on 2025 releases; switch to plan B if the pair is over 1.5×
+      crowded or out of the top 3.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>Only 9 games support the pair, so one hit game could explain the lift. If the pair drops out of the
-    top 3 on 2025 releases, I switch to Management × Strategy.</p>
+    <p>The pair is 1.37× as common as chance, near the 1.5× limit (crossed in 17/100 resamples). If 2025
+    releases push it past 1.5×, I switch to Pixel Graphics × RPG.</p>
   </section>
 </div>
 </body></html>

@@ -97,3 +97,22 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - Data: source, how obtained, legal basis, period, volume.
   - Construction: node, edge, weight, pruning, size.
 - **Puzzle's betweenness is shown in the figure label**, so the findings' numbers are on the page.
+
+## Second revision: full cohort (2026-10-15)
+- **The network is now built from all 9,094 cohort games** (S1), not the random 1,000.
+  - The 1,000-game sample put only 9 games behind the recommended pair. On the full cohort, Puzzle × Story Rich has 104 games and a lift of 1.3× (not 5.9×), so the earlier pick was small-sample noise.
+  - S2 (the live scrape of the 1,000) is now the accuracy check on S1: Jaccard 0.87, ρ 0.98.
+- **Thresholds are now shares of the games analysed:** tag ≥1.5%, edge ≥0.5% shared games, pair ≥0.8%. These are the same 15 / 5 / 8 per 1,000 games as before, so their meaning doesn't change with N.
+- **New result:** Horror × Multiplayer.
+  - 75 games (55 expected), 3.1× median reviews, p < 0.001.
+  - #1 at all 8 NPMI cutoffs; lift > 1 in 100/100 bootstraps.
+  - #1 in only 36/100 bootstraps: in 42 it falls under the 73-game floor, and in 17 it crosses the 1.5× crowding limit.
+- **Plan B is now the runner-up eligible pair** (Pixel Graphics × RPG). The crowded comparison is the best pair that fails only the crowding rule (Management × Simulation).
+- **Figure:**
+  - Shows each focus tag's 2 strongest neighbours plus the shortest paths linking them.
+  - Node colour = median reviews.
+  - Plan B is drawn in purple.
+- **Page additions:**
+  - A 3-row pair table, so the findings' numbers appear in a table.
+  - Actions with relative weeks.
+  - The broker (betweenness) finding was dropped because no action followed from it.

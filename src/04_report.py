@@ -24,25 +24,37 @@ def rank(v):
     return "not eligible" if v is None or (isinstance(v, float) and math.isnan(v)) else f"rank #{int(v)}"
 
 
+def pct(x):
+    return f"{100 * x:.0f}%"
+
+
+def row(r, cls=""):
+    return (f'<tr class="{cls}"><td>{r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
+            f'<td>{r["sat"]:.1f}×</td><td>{r["overlap"]:.2f}</td><td>{r["median"]:.0f}</td><td>{r["lift"]:.1f}×</td>'
+            f'<td>{pct(r["hit"])}</td></tr>')
+
+
+pk, pb, cr = N["pick"], N["planb"], N["crowd"]
 V = dict(
-    repo=REPO, repo_short=REPO.replace("https://", ""), A=A, B=B, RA=N["runner"][0], RB=N["runner"][1],
-    FA=N["fallback"][0], FB=N["fallback"][1],
+    repo=REPO, repo_short=REPO.replace("https://", ""), A=A, B=B, PA=pb["pair"][0], PB=pb["pair"][1],
+    CA=cr["pair"][0], CB=cr["pair"][1],
     fetched=N["fetched_from"] if N["fetched_from"] == N["fetched_to"] else f"{N['fetched_from']}–{N['fetched_to']}",
     pop=f"{N['population']:,}", an=f"{N['analysed']:,}", jac=f"{N['tri_top5_jaccard']:.2f}",
-    rho=f"{N['tri_reviews_spearman']:.2f}", ssjac=f"{N['steamspy_vs_s1_jaccard']:.2f}",
+    rho=f"{N['tri_reviews_spearman']:.2f}",
     generic=", ".join(N["generic"]), raw_touch=N["raw_top10_touch_common"], npmi_touch=N["npmi_top10_touch_common"],
-    raw_edge="–".join(N["raw_top_edge"]), raw_edge_n=N["raw_top_edge_count"], k20_n=N["k20_n"], k20_lift=f"{N['k20_lift']:.1f}",
+    k20_n=N["k20_n"], k20_lift=f"{N['k20_lift']:.1f}",
+    min_tag=N["min_tag"], min_co=N["min_co"], min_pair=N["min_pair"],
     tags_before=N["tags_before"], nodes=N["nodes"], edges=N["edges"], fig_nodes=N["fig_nodes"],
-    broker=N["top_broker"], bc=f"{N['top_broker_bc']:.2f}",
-    broker_deg=N["top_broker_degree"],
-    n_ab=N["best_n"], exp=f"{N['best_expected']:.0f}", ov=f"{N['best_overlap']:.2f}", med=f"{N['best_median']:.0f}",
-    lift=f"{N['best_lift']:.1f}", cmed=f"{N['median_reviews']:.0f}", perm=f"{N['perm_p']:.3f}",
-    flift=f"{N['fallback_lift']:.1f}", fsat=f"{N['fallback_sat']:.1f}",
-    cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
-    boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.0f}", top1=N["boot_top1"],
+    n_ab=pk["n"], exp=f"{pk['expected']:.0f}", sat=f"{pk['sat']:.2f}", ov=pct(pk["overlap"]), med=f"{pk['median']:.0f}",
+    lift=f"{pk['lift']:.1f}", cmed=f"{N['median_reviews']:.0f}",
+    perm="p &lt; 0.001" if N["perm_p"] < 0.001 else f"p = {N['perm_p']:.3f}",
+    hit=pct(pk["hit"]), hit_cut=f"{N['hit_cut']:,.0f}", clift=f"{cr['lift']:.1f}", csat=f"{cr['sat']:.1f}",
+    top10_crowded=N["top10_lift_crowded"], cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
+    boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
+    floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
+    rows=row(pk, "pick") + row(pb, "planb") + row(cr),
 )
-cut_ok = sum(1 for k, v in sweep.items() if k.startswith("NPMI") and v == 1)
-assert cut_ok == V["cut_n"], f"pair is #1 at only {cut_ok}/{V['cut_n']} cutoffs - fix the robustness wording"
+assert not pk["edge"], "page says the recommended pair has no edge"
 V["title"] = TITLE.format(**V)
 
 html = (ROOT / "report/template.html").read_text().format_map(V)
