@@ -24,18 +24,18 @@
     <tr><td>Obtained</td><td>S1 download (snapshot Sep 2025). S2 scraped {fetched}: random 1,000 (seed 7202), 1 request / 1.5 s.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence. robots.txt allows /app/, /appreviews/. No personal data.</td></tr>
     <tr><td>Period</td><td>Released 1 Jan 2023 – 31 Dec 2024.</td></tr>
-    <tr><td>Volume</td><td>S1: all {pop} games with ≥10 reviews (the network). S2: {an} (the check).</td></tr>
+    <tr><td>Volume</td><td>S1: all {pop} games with ≥10 reviews (network). S2: {an} (check).</td></tr>
     <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard {jac}; reviews ρ = {rho}.</td></tr>
     <tr><td>Bias</td><td>The review floor favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
-    <tr><td>Node</td><td>A tag.</td></tr>
+    <tr><td>Node</td><td>A Steam tag (one node type). Undirected, weighted tag–tag projection of the game–tag bipartite graph.</td></tr>
     <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
     <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
     <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, {raw_touch} of the top-10 edges involve the 5 most common tags;
       with NPMI, {npmi_touch}.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, {k20_n} games carry the pair, mostly as minor tags, and lift falls from {lift}× to {k20_lift}×.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, {k20_n} games carry the pair, mostly as minor tags; lift falls from {lift}× to {k20_lift}×.</td></tr>
     <tr><td>Excluded</td><td>“Indie” (seed); release-model and adult tags; tags on &gt;25% of games: {generic}.</td></tr>
     <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co});
       pairs scored if ≥0.8% ({min_pair}).</td></tr>
@@ -67,7 +67,7 @@
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
     <p>The pair is {sat}× as common as chance, near the 1.5× limit (crossed in {over}/100 resamples). If 2025
-    releases push it past 1.5×, I switch to plan B.</p>
+    releases cross it, I switch to plan B.</p>
   </section>
 </div>
 </body></html>
