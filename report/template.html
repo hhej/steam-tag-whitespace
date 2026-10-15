@@ -49,12 +49,21 @@
   <circle cx="1295" cy="602" r="37" fill="none" stroke="#1a9e8f" stroke-width="10"/>
   <circle cx="1498" cy="149" r="42" fill="none" stroke="#1a9e8f" stroke-width="10"/>
   <line x1="1312" y1="563" x2="1480" y2="190" stroke="#1a9e8f" stroke-width="7.5" stroke-dasharray="30 22"/>
+  <!-- inset: the crowded comparison pair, which sits elsewhere in the network; a solid line = it HAS an edge -->
+  <rect x="1462" y="608" width="362" height="142" rx="10" fill="#ffffff" stroke="#c9c8c2" stroke-width="3"/>
+  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">*Crowded: {csat}× chance</text>
+  <text x="1643" y="672" text-anchor="middle" font-size="20" fill="#52514e">edge, NPMI {cnpmi}</text>
+  <line x1="1530" y1="690" x2="1756" y2="690" stroke="#9a9993" stroke-width="8"/>
+  <circle cx="1530" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
+  <circle cx="1756" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
+  <text x="1530" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">{CA}</text>
+  <text x="1756" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">{CB}</text>
 </svg>
 <div class="fig-note third">#3 (fallback): {TA} × {TB}<br>near chance, no edge<br>{t3n} games (exp. {t3exp}) · {t3lift}× reviews</div>
 <div class="fig-note pick">#1: {A} ×<br>{B}, near chance, no edge<br>{n_ab} games (exp. {exp}) · {lift}× reviews</div>
 <div class="fig-note planb">#2: {PA} × {PB}<br>near chance, no edge<br>{pbn} games (exp. {pbexp}) · {pblift}× reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
-<figcaption><b>{bridge} links #1's tags: {hops} steps apart, {hops_wo} without it.</b> {fig_nodes} of {nodes} tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Not shown. 2025 check = crowding · reviews.</figcaption></figure>
+<figcaption><b>{bridge} links #1's tags: {hops} steps apart, {hops_wo} without it.</b> {fig_nodes} of {nodes} tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Inset. 2025 check = crowding · reviews.</figcaption></figure>
 <p class="rule"><b>Selection rule:</b> of pairs on ≥{min_pair} games (0.8%), keep those <b>not crowded</b> (games ≤ 1.5× chance;
 chance = games with A × games with B ÷ {pop}) with ≤20% <b>shared neighbours</b>; rank by median reviews ÷ {cmed}.</p>
 <table class="pairs">

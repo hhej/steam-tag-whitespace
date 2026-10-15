@@ -67,6 +67,7 @@ V = dict(
     col_lo=f"{N['colour_lo']:.0f}", col_hi=f"{N['colour_hi']:.0f}",
     hl=f"{N['horror_lift']:.1f}", nhl=f"{N['pick_nonhorror_lift']:.1f}",
     h2sat=f"{N['holdout']['planb']['sat']:.2f}",
+    cnpmi=f"{cr['npmi']:.2f}",
     t3n=N["third_rec"]["n"], t3exp=f"{N['third_rec']['expected']:.0f}", t3lift=f"{N['third_rec']['lift']:.1f}",
 )
 assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
