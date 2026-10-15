@@ -65,6 +65,7 @@ V = dict(
     coop=pct(N["unmerged_hm_coop"] / N["unmerged_hm_n"]), horror=pct(N["pick_horror"] / pk["n"]),
     top_game=N["pick_top_game"], TA=N["third"][0], TB=N["third"][1],
     col_lo=f"{N['colour_lo']:.0f}", col_hi=f"{N['colour_hi']:.0f}",
+    hl=f"{N['horror_lift']:.1f}", nhl=f"{N['pick_nonhorror_lift']:.1f}",
 )
 assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
 V["title"] = TITLE.format(**V)

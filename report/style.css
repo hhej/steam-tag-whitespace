@@ -47,4 +47,4 @@ table.pairs tr.planb td:first-child { border-left-color: #7a4fc9; }
 .fig-key .lo { text-align: left; } .fig-key .hi { text-align: right; }
 table.pairs td:last-child { white-space: nowrap; }
 
-.row.bottom { grid-template-columns: 0.98fr 1.02fr; }
+.row.bottom { grid-template-columns: 1fr 1fr; }

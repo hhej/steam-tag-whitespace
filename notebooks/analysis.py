@@ -138,6 +138,12 @@ NUM.update(unmerged_hm_n=len(hm), unmerged_hm_coop=int(sum(bool(COOP & set(dicts
 HORROR = {"Horror", "Psychological Horror", "Survival Horror"}
 e0 = (elig.loc[0, "a"], elig.loc[0, "b"])
 pick_games = [i for i, b in enumerate(R["baskets"]) if set(e0) <= set(b)]
+# horror check: is the pick's lift just a horror effect? (horror games overall vs the pick's horror / non-horror games)
+mr = np.median(reviews)
+is_h = np.array([bool(HORROR & set(tn.resolve(d))) for d in dicts])
+pick_h = [i for i in pick_games if is_h[i]]; pick_nh = [i for i in pick_games if not is_h[i]]
+NUM.update(horror_lift=float(np.median(reviews[is_h]) / mr), pick_horror_lift=float(np.median(reviews[pick_h]) / mr),
+           pick_nonhorror_lift=float(np.median(reviews[pick_nh]) / mr), pick_nonhorror_n=len(pick_nh))
 # one-hit check: the pick's lift with its 5 most-reviewed games removed
 rest = sorted(pick_games, key=lambda i: -reviews[i])[5:]
 NUM.update(pick_lift_wo_top5=float(np.median(reviews[rest]) / np.median(reviews)))

@@ -13,8 +13,8 @@
     <p>An indie studio's creative director picks the next game's two lead tags; if no pair passed the selection
     rule, they would pick a crowded one (table, last row).</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
-    <p>Which tags sit in separate neighbourhoods, and which tag links them? That needs neighbours and paths,
-    which a table of counts lacks.</p></section>
+    <p>Counts give crowding and reviews. Which uncrowded pairs join separate neighbourhoods, and through which
+    tag, needs neighbours and paths, which counts lack.</p></section>
 </div>
 
 <div class="row tables">
@@ -23,8 +23,8 @@
     <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 live Steam store.</td></tr>
     <tr><td>Obtained</td><td>S1 download (Sep 2025). S2: 1,000 random S1 games (random seed 7202), scraped {fetched}.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows /app/, /appreviews/; 1 req/1.5 s; no personal data.</td></tr>
-    <tr><td>Volume</td><td>S1: all {pop} Indie games released 2023–24 with ≥10 reviews; hold-out: {hn} released Jan–Jun 2025. S2: {an} with a live page.</td></tr>
-    <tr><td>Check</td><td>S1 vs S2: mean top-5 tag Jaccard {jac}; Spearman ρ of reviews {rho}.</td></tr>
+    <tr><td>Volume</td><td>S1: {pop} Indie games, 2023–24, ≥10 reviews; hold-out: {hn} from Jan–Jun 2025. S2: {an} live pages.</td></tr>
+    <tr><td>Check</td><td>S1 vs S2: top-5 tag Jaccard {jac}; reviews Spearman ρ {rho}.</td></tr>
     <tr><td>Bias</td><td>Favours games that sold; reviews = buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
@@ -58,19 +58,19 @@ chance = games with A × games with B ÷ {pop}) with ≤20% <b>shared neighbours
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
     <li><b>#1</b> is near chance (NPMI {npmi}, no edge) yet gets {lift}× the median reviews ({perm},
-      permutation test); {horror} are horror.</li>
+      permutation test). Not horror: horror games get {hl}×, #1's non-horror games {nhl}×.</li>
     <li><b>{bridge} is the only link</b> between #1's two neighbourhoods (figure): the natural third tag.</li>
-    <li><b>Holds up:</b> #1 at all {cut_n} edge cutoffs; above the median in {boot_gt1}/100 bootstraps (#1 in {top1});
-      {wo5}× without its top 5 games; passes the 2025 check (table).</li>
+    <li><b>Mostly holds:</b> #1 at all {cut_n} edge cutoffs; above the median in {boot_gt1}/100 bootstraps (#1 in {top1});
+      {wo5}× minus its top 5 games; passes the 2025 check.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch a first-person multiplayer horror game.</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page led by First-Person and Multiplayer/Online Co-Op, with {bridge} third.</li>
+    <li>Week 0: pitch a first-person multiplayer game.</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page tagged First-Person, Multiplayer/Online Co-Op, {bridge}.</li>
     <li>Every quarter: re-run on new releases (section 8).</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>#1 and #2 are one multiplayer-horror bet, and First-Person is spreading ({fp25} of 2025 games). If #1 passes
-    1.5× crowding, I switch to #3 (only {h3lift}× in 2025).</p>
+    <p>#1 and #2 share Multiplayer; First-Person is spreading ({fp25} of 2025 games). If #1 passes 1.5× crowding,
+    I switch to #3, whose 2025 reviews fell to the median ({h3lift}×).</p>
   </section>
 </div>
 </body></html>
