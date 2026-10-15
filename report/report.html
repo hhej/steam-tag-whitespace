@@ -10,20 +10,20 @@
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
-    <p>An indie studio's creative director picks the next game's two tags. Had no pair passed the selection rule,
-    they would pick a crowded one (table, last row).</p></section>
+    <p>An indie studio's creative director picks the next game's two lead tags; if no pair passed the selection
+    rule, they would pick a crowded one (table, last row).</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
-    <p>Counts can't show which tags sit in separate parts of the tag network, or which tag links them. The
-    network can, through shared neighbours and bridges.</p></section>
+    <p>Which tags sit in separate neighbourhoods, and which tag links them? That needs neighbours and paths,
+    which a table of counts lacks.</p></section>
 </div>
 
 <div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
     <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 live Steam store.</td></tr>
-    <tr><td>Obtained</td><td>S1 download (Sep 2025). S2: 1,000 random S1 games (seed 7202), scraped 2026-10-14.</td></tr>
+    <tr><td>Obtained</td><td>S1 download (Sep 2025). S2: 1,000 random S1 games (random seed 7202), scraped 2026-10-14.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows /app/, /appreviews/; 1 req/1.5 s; no personal data.</td></tr>
-    <tr><td>Volume</td><td>S1: all 9,094 Indie games released 2023–24 with ≥10 reviews. S2: 996 with a live page.</td></tr>
+    <tr><td>Volume</td><td>S1: all 9,094 Indie games released 2023–24 with ≥10 reviews; hold-out: 2,076 released Jan–Jun 2025. S2: 996 with a live page.</td></tr>
     <tr><td>Check</td><td>S1 vs S2: mean top-5 tag Jaccard 0.87; Spearman ρ of reviews 0.98.</td></tr>
     <tr><td>Bias</td><td>Favours games that sold; reviews = buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
@@ -47,31 +47,30 @@
 <div class="fig-note pick">#1: First-Person ×<br>Multiplayer, near chance, no edge<br>78 games (exp. 71) · 5.1× reviews</div>
 <div class="fig-note planb">#2: Horror × Multiplayer<br>near chance, no edge<br>114 games (exp. 93) · 2.9× reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">34</span><span class="hi">119</span></div></div>
-<figcaption>14 of 80 tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Not shown.</figcaption></figure>
-<p class="rule"><b>Selection rule:</b> of pairs on ≥73 games (0.8%, for stable medians), keep the <b>not crowded</b>
-(games ≤ 1.5× chance = games with A × games with B ÷ 9,094) with <b>separate neighbourhoods</b> (≤20% shared);
-rank by median reviews vs the median game (40).</p>
+<figcaption><b>Survival Horror links #1's tags: 2 steps apart, 5 without it.</b> 14 of 80 tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Not shown. 2025 check = crowding · reviews.</figcaption></figure>
+<p class="rule"><b>Selection rule:</b> of pairs on ≥73 games (0.8%), keep those <b>not crowded</b> (games ≤ 1.5× chance;
+chance = games with A × games with B ÷ 9,094) with ≤20% <b>shared neighbours</b>; rank by median reviews ÷ 40.</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th><th>2025 hold-out</th></tr>
+  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th><th>2025 check</th></tr>
   <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78 (71)</td><td>1.10×</td><td>8%</td><td>204 (5.1×)</td><td>1.14× · 2.4×</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114 (93)</td><td>1.23×</td><td>8%</td><td>117 (2.9×)</td><td>1.45× · 2.7×</td></tr><tr class=""><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133 (107)</td><td>1.25×</td><td>0%</td><td>70 (1.8×)</td><td>1.27× · 1.0×</td></tr><tr class=""><td><span class="role">Crowded*:</span> Building × Simulation</td><td>74 (29)</td><td>2.54×</td><td>8%</td><td>136 (3.4×)</td><td>2.46× · 2.5×</td></tr>
 </table>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is near chance (NPMI 0.02, no edge) yet gets 5.1× the median reviews (permutation test
-      p &lt; 0.001); 68% are horror.</li>
-    <li><b>Survival Horror is the only bridge:</b> remove it and First-Person and Multiplayer go from 2 to 5 steps apart.</li>
-    <li><b>Holds up:</b> #1 at all 8 edge cutoffs; above the median in 100/100 bootstraps, but #1 in only
-      59; 3.4× without its top 5 games; passes on held-out 2025 releases (table: crowding · reviews).</li>
+    <li><b>#1</b> is near chance (NPMI 0.02, no edge) yet gets 5.1× the median reviews (p &lt; 0.001,
+      permutation test); 68% are horror.</li>
+    <li><b>Survival Horror is the only link</b> between #1's two neighbourhoods (figure): the natural third tag.</li>
+    <li><b>Holds up:</b> #1 at all 8 edge cutoffs; above the median in 100/100 bootstraps (#1 in 59);
+      3.4× without its top 5 games; passes the 2025 check (table).</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch a first-person multiplayer horror game (#1).</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page tagged First-Person, Multiplayer, Survival Horror.</li>
+    <li>Week 0: pitch a first-person multiplayer horror game.</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page led by First-Person and Multiplayer/Online Co-Op, with Survival Horror third.</li>
     <li>Every quarter: re-run on new releases (section 8).</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
     <p>#1 and #2 are one multiplayer-horror bet, and First-Person is spreading (27% of 2025 games). If #1 passes
-    1.5× crowding, I switch to #3 (Pixel Graphics × RPG; only 1.0× in 2025).</p>
+    1.5× crowding, I switch to #3 (only 1.0× in 2025).</p>
   </section>
 </div>
 </body></html>
