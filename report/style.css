@@ -17,7 +17,7 @@ td:first-child { font-weight: 600; color: #1f2a6b; white-space: nowrap; width: 1
 tr:last-child td { border-bottom: 0.5px solid #d6d5cf; }
 figure { margin: 1mm 0 0; text-align: center; }
 figure img { width: 100%; display: block; }
-.figwrap { position: relative; width: 64%; margin: 0 auto; }
+.figwrap { position: relative; width: 68%; margin: 0 auto; }
 ul { margin: 0; padding-left: 4.2mm; }
 li { margin-bottom: 0.4mm; }
 b.hl { color: #c4501f; }
@@ -39,7 +39,7 @@ table.pairs tr.planb td:first-child { border-left-color: #7a4fc9; }
 table.pairs th { white-space: nowrap; }
 /* labels drawn over the figure (part of the figure, sized like figure text) */
 .fig-note { position: absolute; font-size: 6.5pt; line-height: 1.15; font-weight: 700; text-align: left; }
-.fig-note.pick { color: #eb6834; left: 1%; bottom: 2%; }
+.fig-note.pick { color: #eb6834; left: 0%; bottom: 0%; }
 .fig-note.planb { color: #7a4fc9; left: 1%; top: 2%; }
 .fig-key { position: absolute; left: 35%; top: 1%; font-size: 6pt; line-height: 1.1; color: #52514e; width: 13%; text-align: center; }
 .fig-key .ramp { display: inline-block; width: 90%; height: 1.4mm;
@@ -47,4 +47,4 @@ table.pairs th { white-space: nowrap; }
 .fig-key .lo, .fig-key .hi { display: inline-block; width: 45%; }
 .fig-key .lo { text-align: left; } .fig-key .hi { text-align: right; }
 
-.row.bottom { grid-template-columns: 0.96fr 1.04fr; }
+.row.bottom { grid-template-columns: 0.94fr 1.06fr; }

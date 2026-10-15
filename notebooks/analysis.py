@@ -138,6 +138,14 @@ NUM.update(unmerged_hm_n=len(hm), unmerged_hm_coop=int(sum(bool(COOP & set(dicts
 HORROR = {"Horror", "Psychological Horror", "Survival Horror"}
 e0 = (elig.loc[0, "a"], elig.loc[0, "b"])
 pick_games = [i for i, b in enumerate(R["baskets"]) if set(e0) <= set(b)]
+# one-hit check: the pick's lift with its 5 most-reviewed games removed
+rest = sorted(pick_games, key=lambda i: -reviews[i])[5:]
+NUM.update(pick_lift_wo_top5=float(np.median(reviews[rest]) / np.median(reviews)))
+# what the shared-neighbour (network) test removes among pairs that pass the crowding test
+uncrowded = pairs[pairs["saturation"] <= P["max_sat"]]
+removed = uncrowded[uncrowded["overlap"] > P["max_overlap"]].sort_values("lift", ascending=False)
+NUM.update(uncrowded_n=len(uncrowded), overlap_removed=len(removed),
+           overlap_removed_eg=[removed.iloc[0]["a"], removed.iloc[0]["b"]], overlap_removed_eg_ov=float(removed.iloc[0]["overlap"]))
 NUM.update(pick_horror=int(sum(bool(HORROR & set(tn.resolve(dicts[i]))) for i in pick_games)),
            pick_top_game=cohort.loc[max(pick_games, key=lambda i: reviews[i]), "name"],
            third=[elig.loc[2, "a"], elig.loc[2, "b"]])
@@ -227,7 +235,8 @@ def rec(r):
                 npmi=float(r.npmi), edge=bool(G.has_edge(r.a, r.b)))
 
 b = elig.loc[0]
-NUM.update(best=list(best), runner=list(runner), pick=rec(b), planb=rec(elig.loc[1]), crowd=rec(crowded.loc[0]),
+NUM.update(best=list(best), runner=list(runner), pick=rec(b), planb=rec(elig.loc[1]), third_rec=rec(elig.loc[2]),
+           crowd=rec(crowded.loc[0]),
            hit_cut=float(np.quantile(reviews, 0.9)),
            sweep=sweep.to_dict("records"), eligible=len(elig), scored_pairs=len(pairs))
 (OUT / "numbers.json").write_text(json.dumps(NUM, indent=2, default=str))

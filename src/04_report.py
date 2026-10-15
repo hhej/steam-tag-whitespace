@@ -53,7 +53,10 @@ V = dict(
     top10_crowded=N["top10_lift_crowded"], cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
-    rows=row(pk, "Pick", "pick") + row(pb, "Plan B", "planb") + row(cr, "Crowded"),
+    rows=row(pk, "#1", "pick") + row(pb, "#2 (plan B)", "planb") + row(N["third_rec"], "#3")
+         + row(cr, "Crowded*"),
+    wo5=f"{N['pick_lift_wo_top5']:.1f}", unc=N["uncrowded_n"], ovr=N["overlap_removed"],
+    ova=N["overlap_removed_eg"][0], ovb=N["overlap_removed_eg"][1], ovp=pct(N["overlap_removed_eg_ov"]),
     npmi=f"{pk['npmi']:.2f}", pbn=pb["n"], pbexp=f"{pb['expected']:.0f}", pblift=f"{pb['lift']:.1f}",
     pbnpmi=f"{pb['npmi']:.2f}", pbsat=f"{pb['sat']:.2f}", top3=N["boot_top3"],
     coop=pct(N["unmerged_hm_coop"] / N["unmerged_hm_n"]), horror=pct(N["pick_horror"] / pk["n"]),

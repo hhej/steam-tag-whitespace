@@ -46,6 +46,14 @@
   "top10_lift_crowded": 8,
   "unmerged_hm_n": 75,
   "unmerged_hm_coop": 63,
+  "pick_lift_wo_top5": 3.35,
+  "uncrowded_n": 35,
+  "overlap_removed": 3,
+  "overlap_removed_eg": [
+    "RPG",
+    "Visual Novel"
+  ],
+  "overlap_removed_eg_ov": 0.25,
   "pick_horror": 53,
   "pick_top_game": "Lethal Company",
   "third": [
@@ -105,6 +113,21 @@
     "lift": 2.925,
     "hit": 0.22807017543859648,
     "npmi": 0.0472219363079099,
+    "edge": false
+  },
+  "third_rec": {
+    "pair": [
+      "Pixel Graphics",
+      "RPG"
+    ],
+    "n": 133,
+    "expected": 106.78117440070376,
+    "sat": 1.2455379025979643,
+    "overlap": 0.0,
+    "median": 70.0,
+    "lift": 1.75,
+    "hit": 0.12781954887218044,
+    "npmi": 0.05196837756996266,
     "edge": false
   },
   "crowd": {
