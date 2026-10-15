@@ -4,6 +4,7 @@ Every number on the page comes from outputs/numbers.json (written by notebooks/a
 Fails loudly if the PDF is not exactly one A4 page.
 """
 import json
+import re
 import math
 import subprocess
 from pathlib import Path
@@ -13,7 +14,7 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 REPO = "https://github.com/hhej/steam-tag-whitespace"
-TITLE = "Which Steam tag pair should an indie studio build next? {A} × {B}"
+TITLE = "Which Steam tag pair should an indie studio build? {A} × {B}"
 
 N = json.loads((ROOT / "outputs/numbers.json").read_text())
 A, B = N["best"]
@@ -28,10 +29,9 @@ def pct(x):
     return f"{100 * x:.0f}%"
 
 
-def row(r, cls=""):
-    return (f'<tr class="{cls}"><td>{r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
-            f'<td>{r["sat"]:.1f}×</td><td>{r["overlap"]:.2f}</td><td>{r["median"]:.0f}</td><td>{r["lift"]:.1f}×</td>'
-            f'<td>{pct(r["hit"])}</td></tr>')
+def row(r, role, cls=""):
+    return (f'<tr class="{cls}"><td>{role}</td><td>{r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
+            f'<td>{r["sat"]:.1f}×</td><td>{pct(r["overlap"])}</td><td>{r["median"]:.0f} ({r["lift"]:.1f}× {N["median_reviews"]:.0f})</td></tr>')
 
 
 pk, pb, cr = N["pick"], N["planb"], N["crowd"]
@@ -52,7 +52,7 @@ V = dict(
     top10_crowded=N["top10_lift_crowded"], cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
-    rows=row(pk, "pick") + row(pb, "planb") + row(cr),
+    rows=row(pk, "Pick", "pick") + row(pb, "Plan B", "planb") + row(cr, "Crowded"),
     npmi=f"{pk['npmi']:.2f}", pbn=pb["n"], pbexp=f"{pb['expected']:.0f}", pblift=f"{pb['lift']:.1f}",
     pbnpmi=f"{pb['npmi']:.2f}",
 )
@@ -68,3 +68,11 @@ subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-foot
 pages = len(PdfReader(pdf).pages)
 print(f"wrote {pdf}: {pages} page(s)")
 assert pages == 1, "report overflows one page"
+
+# Chrome silently shrinks a page whose content is wider than A4, which would push 10pt text below 10pt.
+# 10pt Helvetica gives word boxes ~11.6pt tall; a shrunken page gives ~11.1pt.
+bbox = subprocess.run(["pdftotext", "-bbox", str(pdf), "-"], check=True, capture_output=True, text=True).stdout
+heights = sorted(float(m[1]) - float(m[0]) for m in re.findall(r'yMin="([\d.]+)" xMax="[\d.]+" yMax="([\d.]+)"', bbox))
+body = max(set(round(h, 1) for h in heights), key=[round(h, 1) for h in heights].count)
+print(f"body text box height {body}pt (10pt unscaled = 11.6)")
+assert body >= 11.5, "Chrome shrank the page to fit: some element is wider than the page, so text is below 10pt"

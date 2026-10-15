@@ -1,44 +1,43 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Which Steam tag pair should an indie studio build next? Horror × Multiplayer</title>
+<html lang="en"><head><meta charset="utf-8"><title>Which Steam tag pair should an indie studio build? Horror × Multiplayer</title>
 <link rel="stylesheet" href="style.css"></head>
 <body>
 <header>
-  <h1>Which Steam tag pair should an indie studio build next? Horror × Multiplayer</h1>
+  <h1>Which Steam tag pair should an indie studio build? Horror × Multiplayer</h1>
   <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="https://github.com/hhej/steam-tag-whitespace">github.com/hhej/steam-tag-whitespace</a></div>
 </header>
 <p class="intro">Steam is the largest PC game store. Players vote tags onto each game; the top tags drive store search.</p>
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
-    <p>The creative director of an indie studio decides which two-tag game concept to build next. If no pair had
-    passed the tests below, they would pick a proven but crowded pair such as Management × Simulation.</p></section>
+    <p>An indie studio's creative director picks the two-tag concept for the next game. With no pair passing
+    the rule in section 5, they would take a proven, crowded pair, e.g. Management × Simulation.</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
-    <p>Tag counts show which tags are common. They cannot show which two tags sit in separate parts of the tag
-    network yet do well when combined; that needs each tag's neighbours.</p></section>
+    <p>Counts can't tell whether two tags attract different players. The network can: tags sharing few
+    neighbours draw on audiences that rarely meet, so a game combining them can reach both.</p></section>
 </div>
 
 <div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
-    <tr><td>Obtained</td><td>S1 download (Sep 2025 snapshot). S2 scraped 2026-10-14: random 1,000 (seed 7202), 1 req / 1.5 s.</td></tr>
-    <tr><td>Legal</td><td>S1 MIT licence. robots.txt allows /app/, /appreviews/. No personal data.</td></tr>
+    <tr><td>Source</td><td>S1 = FronkonGames dataset (Hugging Face); S2 = live Steam store + reviews.</td></tr>
+    <tr><td>Obtained</td><td>S1 download (Sep 2025 snapshot). S2 scraped 2026-10-14: random 1,000 (seed 7202).</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows /app/, /appreviews/; 1 req/1.5 s. No personal data.</td></tr>
     <tr><td>Period</td><td>Released Jan 2023 – Dec 2024.</td></tr>
-    <tr><td>Volume</td><td>S1: all 9,094 games with ≥10 reviews (network). S2: 996 (check).</td></tr>
-    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard 0.87; reviews ρ = 0.98.</td></tr>
-    <tr><td>Bias</td><td>The review floor favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
+    <tr><td>Volume</td><td>S1: all 9,094 games with ≥10 reviews. S2: 996.</td></tr>
+    <tr><td>Check</td><td>S1 vs S2: top-5 tags Jaccard 0.87; reviews ρ 0.98.</td></tr>
+    <tr><td>Bias</td><td>Favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
-    <tr><td>Node</td><td>A Steam tag (one node type). Undirected, weighted tag–tag projection of the game–tag bipartite graph.</td></tr>
+    <tr><td>Node</td><td>A Steam tag. Undirected, weighted tag–tag projection of the game–tag bipartite graph.</td></tr>
     <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
-    <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
-    <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, 9 of the top-10 edges involve the 5 most common tags;
-      with NPMI, 0.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, 200 games carry the pair, mostly as minor tags; lift falls from 3.1× to 2.5×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie” (seed); release-model and adult tags; tags on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
-    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45);
-      pairs scored if ≥0.8% (73).</td></tr>
+    <tr><td>Resolution</td><td>None: Steam tags come from a fixed list.</td></tr>
+    <tr><td>Weight</td><td>NPMI: co-occurrence vs chance, −1 to 1 (0 = chance). By raw count, 9 of the top-10 edges touch
+      the 5 commonest tags; by NPMI, 0.</td></tr>
+    <tr><td>Window</td><td>Top 5, as the store page shows. With all 20, the pair's reviews vs the median game fall from 3.1× to 2.5× (200 games, mostly minor tags).</td></tr>
+    <tr><td>Excluded</td><td>“Indie” (seed); release-model, adult tags; tags on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
+    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45); pair ≥0.8% (73).</td></tr>
     <tr><td>Size</td><td>439 tags → 81 nodes, 177 edges.</td></tr>
   </table></section>
 </div>
@@ -46,21 +45,23 @@
 <h2><span class="n">5</span>The picture</h2>
 <figure><div class="figwrap"><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
 <div class="planb-note">Plan B, Pixel Graphics × RPG: near chance, no edge<br>133 games (exp. 106) · 1.8× median reviews</div></div>
-<figcaption>16 of 81 tags. Orange = pick, purple = plan B, dashed = no edge (NPMI &lt; 0.10). Size = games; width = NPMI.</figcaption></figure>
+<figcaption><b>Horror's and Multiplayer's neighbours touch only via Online Co-Op.</b> Dashed = no edge; node size = games.</figcaption></figure>
+<p class="rule"><b>Selection rule:</b> among pairs on ≥73 games, keep those <b>not crowded</b> (games ≤ 1.5× chance,
+where chance = games with A × games with B ÷ 9,094) whose tags sit in <b>separate neighbourhoods</b> (≤20% shared
+neighbours); pick the one whose median reviews are highest relative to the median game (40).</p>
 <table class="pairs">
-  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Shared neighbours</th><th>Median reviews</th>
-    <th>Lift (÷40)</th><th>Top 10%</th></tr>
-  <tr class="pick"><td>Horror × Multiplayer</td><td>75 (55)</td><td>1.4×</td><td>0.08</td><td>124</td><td>3.1×</td><td>24%</td></tr><tr class="planb"><td>Pixel Graphics × RPG</td><td>133 (106)</td><td>1.3×</td><td>0.00</td><td>70</td><td>1.8×</td><td>13%</td></tr><tr class=""><td>Management × Simulation</td><td>121 (32)</td><td>3.8×</td><td>0.08</td><td>127</td><td>3.2×</td><td>23%</td></tr>
+  <tr><th>Role</th><th>Pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th></tr>
+  <tr class="pick"><td>Pick</td><td>Horror × Multiplayer</td><td>75 (55)</td><td>1.4×</td><td>8%</td><td>124 (3.1× 40)</td></tr><tr class="planb"><td>Plan B</td><td>Pixel Graphics × RPG</td><td>133 (106)</td><td>1.3×</td><td>0%</td><td>70 (1.8× 40)</td></tr><tr class=""><td>Crowded</td><td>Management × Simulation</td><td>121 (32)</td><td>3.8×</td><td>8%</td><td>127 (3.2× 40)</td></tr>
 </table>
-<p class="note">Exp. = games chance predicts = games with A × games with B ÷ 9,094. Over-supply = games ÷ exp.</p>
+
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>Horror × Multiplayer</b> is combined about as often as chance (NPMI 0.07, so no edge), and the tags share
-      8% of their neighbours. Yet its median game gets 3.1× the cohort's 40 reviews (p &lt; 0.001).</li>
-    <li>9 of the 10 highest-lift pairs are crowded, e.g. Management × Simulation (3.8× chance).</li>
-    <li>#1 at all 8 NPMI cutoffs. Lift &gt; 1 in 100/100 bootstraps (90% CI 1.9–7.8×) and on
-      S2 (1.6×). #1 in 36/100; in 42 it dips under the 73-game floor.</li>
+    <li><b>Horror × Multiplayer</b> is used about as often as chance (NPMI 0.07, no edge), so the niche isn't
+      crowded, yet its median game gets 3.1× the typical game's reviews (p &lt; 0.001).</li>
+    <li>9 of the 10 highest-review pairs are crowded (&gt;1.5× chance), e.g. Management × Simulation (3.8×).</li>
+    <li><b>Robust:</b> #1 at all 8 edge cutoffs; beats the typical game in 100/100 resamples and
+      on S2. <b>Weak spot:</b> #1 in only 36/100 resamples, as it sits right at the 73-game minimum.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch Horror × Multiplayer at greenlight; plan B is Pixel Graphics × RPG.</li>

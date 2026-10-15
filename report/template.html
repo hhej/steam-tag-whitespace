@@ -10,35 +10,34 @@
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
-    <p>The creative director of an indie studio decides which two-tag game concept to build next. If no pair had
-    passed the tests below, they would pick a proven but crowded pair such as {CA} × {CB}.</p></section>
+    <p>An indie studio's creative director picks the two-tag concept for the next game. With no pair passing
+    the rule in section 5, they would take a proven, crowded pair, e.g. {CA} × {CB}.</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
-    <p>Tag counts show which tags are common. They cannot show which two tags sit in separate parts of the tag
-    network yet do well when combined; that needs each tag's neighbours.</p></section>
+    <p>Counts can't tell whether two tags attract different players. The network can: tags sharing few
+    neighbours draw on audiences that rarely meet, so a game combining them can reach both.</p></section>
 </div>
 
 <div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
-    <tr><td>Obtained</td><td>S1 download (Sep 2025 snapshot). S2 scraped {fetched}: random 1,000 (seed 7202), 1 req / 1.5 s.</td></tr>
-    <tr><td>Legal</td><td>S1 MIT licence. robots.txt allows /app/, /appreviews/. No personal data.</td></tr>
+    <tr><td>Source</td><td>S1 = FronkonGames dataset (Hugging Face); S2 = live Steam store + reviews.</td></tr>
+    <tr><td>Obtained</td><td>S1 download (Sep 2025 snapshot). S2 scraped {fetched}: random 1,000 (seed 7202).</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows /app/, /appreviews/; 1 req/1.5 s. No personal data.</td></tr>
     <tr><td>Period</td><td>Released Jan 2023 – Dec 2024.</td></tr>
-    <tr><td>Volume</td><td>S1: all {pop} games with ≥10 reviews (network). S2: {an} (check).</td></tr>
-    <tr><td>Cross-check</td><td>S1 vs S2 top-5 tags: Jaccard {jac}; reviews ρ = {rho}.</td></tr>
-    <tr><td>Bias</td><td>The review floor favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
+    <tr><td>Volume</td><td>S1: all {pop} games with ≥10 reviews. S2: {an}.</td></tr>
+    <tr><td>Check</td><td>S1 vs S2: top-5 tags Jaccard {jac}; reviews ρ {rho}.</td></tr>
+    <tr><td>Bias</td><td>Favours games that sold; reviews count buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
-    <tr><td>Node</td><td>A Steam tag (one node type). Undirected, weighted tag–tag projection of the game–tag bipartite graph.</td></tr>
+    <tr><td>Node</td><td>A Steam tag. Undirected, weighted tag–tag projection of the game–tag bipartite graph.</td></tr>
     <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
-    <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
-    <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, {raw_touch} of the top-10 edges involve the 5 most common tags;
-      with NPMI, {npmi_touch}.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, {k20_n} games carry the pair, mostly as minor tags; lift falls from {lift}× to {k20_lift}×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie” (seed); release-model and adult tags; tags on &gt;25% of games: {generic}.</td></tr>
-    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co});
-      pairs scored if ≥0.8% ({min_pair}).</td></tr>
+    <tr><td>Resolution</td><td>None: Steam tags come from a fixed list.</td></tr>
+    <tr><td>Weight</td><td>NPMI: co-occurrence vs chance, −1 to 1 (0 = chance). By raw count, {raw_touch} of the top-10 edges touch
+      the 5 commonest tags; by NPMI, {npmi_touch}.</td></tr>
+    <tr><td>Window</td><td>Top 5, as the store page shows. With all 20, the pair's reviews vs the median game fall from {lift}× to {k20_lift}× ({k20_n} games, mostly minor tags).</td></tr>
+    <tr><td>Excluded</td><td>“Indie” (seed); release-model, adult tags; tags on &gt;25% of games: {generic}.</td></tr>
+    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co}); pair ≥0.8% ({min_pair}).</td></tr>
     <tr><td>Size</td><td>{tags_before} tags → {nodes} nodes, {edges} edges.</td></tr>
   </table></section>
 </div>
@@ -46,21 +45,23 @@
 <h2><span class="n">5</span>The picture</h2>
 <figure><div class="figwrap"><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
 <div class="planb-note">Plan B, {PA} × {PB}: near chance, no edge<br>{pbn} games (exp. {pbexp}) · {pblift}× median reviews</div></div>
-<figcaption>{fig_nodes} of {nodes} tags. Orange = pick, purple = plan B, dashed = no edge (NPMI &lt; 0.10). Size = games; width = NPMI.</figcaption></figure>
+<figcaption><b>Horror's and Multiplayer's neighbours touch only via Online Co-Op.</b> Dashed = no edge; node size = games.</figcaption></figure>
+<p class="rule"><b>Selection rule:</b> among pairs on ≥{min_pair} games, keep those <b>not crowded</b> (games ≤ 1.5× chance,
+where chance = games with A × games with B ÷ {pop}) whose tags sit in <b>separate neighbourhoods</b> (≤20% shared
+neighbours); pick the one whose median reviews are highest relative to the median game ({cmed}).</p>
 <table class="pairs">
-  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Shared neighbours</th><th>Median reviews</th>
-    <th>Lift (÷{cmed})</th><th>Top 10%</th></tr>
+  <tr><th>Role</th><th>Pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th></tr>
   {rows}
 </table>
-<p class="note">Exp. = games chance predicts = games with A × games with B ÷ {pop}. Over-supply = games ÷ exp.</p>
+
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>{A} × {B}</b> is combined about as often as chance (NPMI {npmi}, so no edge), and the tags share
-      {ov} of their neighbours. Yet its median game gets {lift}× the cohort's {cmed} reviews ({perm}).</li>
-    <li>{top10_crowded} of the 10 highest-lift pairs are crowded, e.g. {CA} × {CB} ({csat}× chance).</li>
-    <li>#1 at all {cut_n} NPMI cutoffs. Lift &gt; 1 in {boot_gt1}/100 bootstraps (90% CI {lo}–{hi}×) and on
-      S2 ({s2lift}×). #1 in {top1}/100; in {floor} it dips under the {min_pair}-game floor.</li>
+    <li><b>{A} × {B}</b> is used about as often as chance (NPMI {npmi}, no edge), so the niche isn't
+      crowded, yet its median game gets {lift}× the typical game's reviews ({perm}).</li>
+    <li>{top10_crowded} of the 10 highest-review pairs are crowded (&gt;1.5× chance), e.g. {CA} × {CB} ({csat}×).</li>
+    <li><b>Robust:</b> #1 at all {cut_n} edge cutoffs; beats the typical game in {boot_gt1}/100 resamples and
+      on S2. <b>Weak spot:</b> #1 in only {top1}/100 resamples, as it sits right at the {min_pair}-game minimum.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch {A} × {B} at greenlight; plan B is {PA} × {PB}.</li>
