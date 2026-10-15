@@ -130,3 +130,8 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - Node positions are hand-designed (`MANUAL` in the notebook), with an automatic fallback.
   - Pair call-outs and the colour key are written on the page in HTML.
 - **True 10pt:** Chrome had been shrinking an over-wide page to fit. `04_report.py` now asserts that the text is unscaled.
+- **Fourth revision (2026-10-15):**
+  - 2025 hold-out (Jan–Jun 2025 releases, same tag cleaning): #1 crowding 1.14×, reviews 2.4×.
+  - Bridge finding: removing Survival Horror moves First-Person and Multiplayer from 2 to 5 steps apart.
+  - Plan B is now #3, because #2 is the same bet.
+  - The action tags Survival Horror as the third tag.

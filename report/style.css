@@ -32,11 +32,10 @@ table.pairs td:first-child { font-weight: 600; border-left: 3px solid transparen
 .role { color: #52514e; font-weight: 400; }
 table.pairs tr.pick td:first-child { border-left-color: #eb6834; }
 table.pairs tr.planb td:first-child { border-left-color: #7a4fc9; }
-.row.tables { grid-template-columns: 0.86fr 1.14fr; }
+.row.tables { grid-template-columns: 0.84fr 1.16fr; }
 .intro { margin-top: 1mm; }
 .note { font-size: 10pt; color: #52514e; margin-top: 0.3mm; }
 .rule { margin-top: 1mm; }
-table.pairs th { white-space: nowrap; }
 /* labels drawn over the figure (part of the figure, sized like figure text) */
 .fig-note { position: absolute; font-size: 6.5pt; line-height: 1.15; font-weight: 700; text-align: left; }
 .fig-note.pick { color: #eb6834; left: 0%; bottom: 0%; }
@@ -47,4 +46,4 @@ table.pairs th { white-space: nowrap; }
 .fig-key .lo, .fig-key .hi { display: inline-block; width: 45%; }
 .fig-key .lo { text-align: left; } .fig-key .hi { text-align: right; }
 
-.row.bottom { grid-template-columns: 0.94fr 1.06fr; }
+.row.bottom { grid-template-columns: 0.94fr 1.06fr; }table.pairs td:last-child { white-space: nowrap; }

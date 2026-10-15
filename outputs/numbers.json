@@ -77,6 +77,39 @@
   "boot_lift_p95": 9.901646341463413,
   "perm_p": 0.0,
   "perm_draws": 10000,
+  "holdout_n": 2076,
+  "holdout_fp_share": 0.273121387283237,
+  "holdout": {
+    "pick": {
+      "n": 20,
+      "expected": 17.514450867052023,
+      "sat": 1.141914191419142,
+      "lift": 2.425
+    },
+    "planb": {
+      "n": 34,
+      "expected": 23.497109826589597,
+      "sat": 1.4469864698646986,
+      "lift": 2.7375
+    },
+    "third": {
+      "n": 33,
+      "expected": 26.03757225433526,
+      "sat": 1.2673992673992673,
+      "lift": 1.025
+    },
+    "crowd": {
+      "n": 23,
+      "expected": 9.335260115606937,
+      "sat": 2.4637770897832816,
+      "lift": 2.475
+    }
+  },
+  "bridge": [
+    "Survival Horror"
+  ],
+  "bridge_hops": 2,
+  "bridge_hops_without": 5,
   "best": [
     "First-Person",
     "Multiplayer"

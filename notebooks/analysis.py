@@ -226,6 +226,42 @@ NUM.update(perm_p=float((draws >= b0.median_reviews).mean()), perm_draws=len(dra
 print("permutation p =", NUM["perm_p"])
 
 # %% [markdown]
+# ### Hold-out: Indie games released Jan-Jun 2025 (never used above), same tag cleaning and generic list
+
+# %%
+with open(ROOT / "data/external/fronkon_games.json") as f:
+    raw = json.load(f)
+h_rev, h_tags = [], []
+for v in raw.values():
+    d = pd.to_datetime(v.get("release_date", ""), errors="coerce")
+    t = v.get("tags") or {}
+    t = {x: 0 for x in t} if isinstance(t, list) else t
+    r = int(v.get("positive", 0)) + int(v.get("negative", 0))
+    if (pd.Timestamp("2025-01-01") <= d <= pd.Timestamp("2025-06-30") if not pd.isna(d) else False) \
+            and "Indie" in (v.get("genres") or []) and r >= 10 and t:
+        h_rev.append(r); h_tags.append(tn.resolve(dict(sorted(t.items(), key=lambda kv: -kv[1]))))
+h_rev = np.array(h_rev)
+h_b = tn.top_k_tags([list(x) for x in h_tags], P["k"], R["generic"])   # the 2023-24 generic list, unchanged
+def holdout(pair):
+    has = np.array([set(pair) <= set(x) for x in h_b])
+    exp = sum(pair[0] in x for x in h_b) * sum(pair[1] in x for x in h_b) / len(h_b)
+    return dict(n=int(has.sum()), expected=float(exp), sat=float(has.sum() / exp), lift=float(np.median(h_rev[has]) / np.median(h_rev)))
+third_pair = (elig.loc[2, "a"], elig.loc[2, "b"])
+NUM.update(holdout_n=len(h_rev), holdout_fp_share=float(np.mean(["First-Person" in x for x in h_tags])),
+           holdout={"pick": holdout(best), "planb": holdout(runner), "third": holdout(third_pair), "crowd": holdout((crowded.loc[0, "a"], crowded.loc[0, "b"]))})
+print(len(h_rev), "hold-out games;", NUM["holdout"])
+
+# %% [markdown]
+# ### Bridge: how far apart are the pick's tags without the one neighbour they share?
+
+# %%
+shared_nb = sorted((set(G[best[0]]) & set(G[best[1]])))
+G_cut = G.copy(); G_cut.remove_nodes_from(shared_nb)
+NUM.update(bridge=shared_nb, bridge_hops=nx.shortest_path_length(G, *best),
+           bridge_hops_without=nx.shortest_path_length(G_cut, *best) if nx.has_path(G_cut, *best) else None)
+print("shared neighbours", shared_nb, "hops", NUM["bridge_hops"], "-> without them", NUM["bridge_hops_without"])
+
+# %% [markdown]
 # ## 6 · Record the headline numbers
 
 # %%

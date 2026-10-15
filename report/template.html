@@ -10,21 +10,20 @@
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
-    <p>An indie studio's creative director chooses the next game's two tags. If no pair passed the rule in
-    section 5, they would take a crowded pair (table, last row).</p></section>
+    <p>An indie studio's creative director picks the next game's two tags. Had no pair passed the selection rule,
+    they would pick a crowded one (table, last row).</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
-    <p>Counts can't show whether two tags draw different players. The network can: tags with few shared
-    neighbours point to audiences that rarely meet.</p></section>
+    <p>Counts can't show which tags sit in separate parts of the tag network, or which tag links them. The
+    network can, through shared neighbours and bridges.</p></section>
 </div>
 
 <div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames (Hugging Face); S2 live Steam store.</td></tr>
+    <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 live Steam store.</td></tr>
     <tr><td>Obtained</td><td>S1 download (Sep 2025). S2: 1,000 random S1 games (seed 7202), scraped {fetched}.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows /app/, /appreviews/; 1 req/1.5 s; no personal data.</td></tr>
-    <tr><td>Period</td><td>Jan 2023 – Dec 2024 releases.</td></tr>
-    <tr><td>Volume</td><td>S1: all {pop} Indie games with ≥10 reviews. S2: {an} with a live page.</td></tr>
+    <tr><td>Volume</td><td>S1: all {pop} Indie games released 2023–24 with ≥10 reviews. S2: {an} with a live page.</td></tr>
     <tr><td>Check</td><td>S1 vs S2: mean top-5 tag Jaccard {jac}; Spearman ρ of reviews {rho}.</td></tr>
     <tr><td>Bias</td><td>Favours games that sold; reviews = buyers, not unmet demand; late-2024 games had less time.</td></tr>
   </table></section>
@@ -36,9 +35,8 @@
       co-op too).</td></tr>
     <tr><td>Weight</td><td>NPMI: co-occurrence vs chance (0 = chance). By raw count, {raw_touch} of the top-10 edges touch the 5
       commonest tags; by NPMI, {npmi_touch}.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game (as on the store page). With all 20, #1 spans {k20_n} games and its reviews drop
-      from {lift}× to {k20_lift}×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie”; Early Access, Free to Play, adult; on &gt;25% of games: {generic}.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's reviews drop from {lift}× to {k20_lift}×.</td></tr>
+    <tr><td>Excluded</td><td>“Indie”; Early Access, Free to Play, adult tags; on &gt;25% of games: {generic}.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games ({min_tag}); edge needs NPMI ≥ 0.10 and ≥0.5% of games ({min_co}) with both tags.
       {tags_before} tags → <b>{nodes} nodes, {edges} edges</b>.</td></tr>
   </table></section>
@@ -47,34 +45,33 @@
 <h2><span class="n">5</span>The picture</h2>
 <figure><div class="figwrap"><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
 <div class="fig-note pick">#1: {A} ×<br>{B}, near chance, no edge<br>{n_ab} games (exp. {exp}) · {lift}× reviews</div>
-<div class="fig-note planb">#2 (plan B): {PA} × {PB}<br>near chance, no edge<br>{pbn} games (exp. {pbexp}) · {pblift}× reviews</div>
+<div class="fig-note planb">#2: {PA} × {PB}<br>near chance, no edge<br>{pbn} games (exp. {pbexp}) · {pblift}× reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
-<figcaption><b>{A} and {B} share only Survival Horror.</b> {fig_nodes} of {nodes} tags: ranked pairs (bold), the 2 strongest neighbours of #1 and #2, linking paths. Size = games; width = NPMI; *not shown.</figcaption></figure>
-<p class="rule"><b>Selection rule:</b> among pairs on ≥{min_pair} games, keep those <b>not crowded</b> (games ≤ 1.5× chance;
-chance = games with A × games with B ÷ {pop}) with tags in <b>separate neighbourhoods</b> (≤20% shared neighbours); rank by
-median reviews vs the median game ({cmed}).</p>
+<figcaption>{fig_nodes} of {nodes} tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Not shown.</figcaption></figure>
+<p class="rule"><b>Selection rule:</b> of pairs on ≥{min_pair} games (0.8%, for stable medians), keep the <b>not crowded</b>
+(games ≤ 1.5× chance = games with A × games with B ÷ {pop}) with <b>separate neighbourhoods</b> (≤20% shared);
+rank by median reviews vs the median game ({cmed}).</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>NPMI</th><th>Median reviews</th></tr>
+  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th><th>2025 hold-out</th></tr>
   {rows}
 </table>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1 {A} × {B}</b> is near chance (NPMI {npmi}, no edge) yet gets {lift}× the median reviews
-      (permutation {perm}); {horror} are horror.</li>
-    <li>Both tests bite: {top10_crowded} of the top 10 pairs by reviews are crowded; the network test drops {ovr} of
-      {unc} uncrowded pairs (e.g. {ova} × {ovb}).</li>
-    <li><b>Holds up:</b> #1 at all {cut_n} edge cutoffs; beats the median in {boot_gt1}/100 bootstraps; {wo5}×
-      without its top 5 games. <b>Weak spot:</b> #1 in {top1}/100.</li>
+    <li><b>#1</b> is near chance (NPMI {npmi}, no edge) yet gets {lift}× the median reviews (permutation test
+      {perm}); {horror} are horror.</li>
+    <li><b>{bridge} is the only bridge:</b> remove it and {A} and {B} go from {hops} to {hops_wo} steps apart.</li>
+    <li><b>Holds up:</b> #1 at all {cut_n} edge cutoffs; above the median in {boot_gt1}/100 bootstraps, but #1 in only
+      {top1}; {wo5}× without its top 5 games; passes on held-out 2025 releases (table: crowding · reviews).</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch a first-person multiplayer horror game (#1); plan B is #2.</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page, tagged {A} and {B} first.</li>
-    <li>Before full production: re-run on 2025 data (section 8).</li>
+    <li>Week 0: pitch a first-person multiplayer horror game (#1).</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page tagged {A}, {B}, {bridge}.</li>
+    <li>Every quarter: re-run on new releases (section 8).</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>#1 and #2 are both multiplayer horror; "not crowded" is vs chance, not vs the 2023–24 co-op horror
-    boom. If 2025 releases cross 1.5×, I switch to #3.</p>
+    <p>#1 and #2 are one multiplayer-horror bet, and First-Person is spreading ({fp25} of 2025 games). If #1 passes
+    1.5× crowding, I switch to #3 ({TA} × {TB}; only {h3lift}× in 2025).</p>
   </section>
 </div>
 </body></html>
