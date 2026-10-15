@@ -23,7 +23,7 @@
     "Exploration"
   ],
   "n_generic": 8,
-  "nodes": 81,
+  "nodes": 80,
   "edges": 177,
   "tags_before": 439,
   "min_tag": 136,
@@ -43,75 +43,83 @@
     "Adventure"
   ],
   "raw_top_edge_count": 528,
-  "top10_lift_crowded": 9,
-  "k20_n": 200,
-  "k20_lift": 2.4625,
-  "k20_sat": 0.9234446699858143,
-  "s2_pair_n": 6,
-  "s2_pair_lift": 1.5784313725490196,
-  "boot_below_floor": 42,
-  "boot_outranked": 5,
-  "boot_planb_top1": 15,
-  "boot_either_top1": 51,
-  "boot_top1": 36,
-  "boot_top3": 40,
-  "boot_lift_gt1": 100,
-  "boot_sat_over": 17,
-  "boot_lift_p05": 1.875,
-  "boot_lift_p95": 7.75,
-  "perm_p": 0.0,
-  "perm_draws": 10000,
-  "best": [
-    "Horror",
-    "Multiplayer"
-  ],
-  "runner": [
+  "top10_lift_crowded": 8,
+  "unmerged_hm_n": 75,
+  "unmerged_hm_coop": 63,
+  "pick_horror": 53,
+  "pick_top_game": "Lethal Company",
+  "third": [
     "Pixel Graphics",
     "RPG"
   ],
+  "k20_n": 375,
+  "k20_lift": 3.025,
+  "k20_sat": 1.1447479725012084,
+  "s2_pair_n": 0,
+  "s2_pair_lift": NaN,
+  "boot_below_floor": 24,
+  "boot_outranked": 17,
+  "boot_planb_top1": 35,
+  "boot_either_top1": 94,
+  "boot_top1": 59,
+  "boot_top3": 74,
+  "boot_lift_gt1": 100,
+  "boot_sat_over": 0,
+  "boot_lift_p05": 2.3246036585365855,
+  "boot_lift_p95": 9.901646341463413,
+  "perm_p": 0.0,
+  "perm_draws": 10000,
+  "best": [
+    "First-Person",
+    "Multiplayer"
+  ],
+  "runner": [
+    "Horror",
+    "Multiplayer"
+  ],
   "pick": {
     "pair": [
-      "Horror",
+      "First-Person",
       "Multiplayer"
     ],
-    "n": 75,
-    "expected": 54.721794589839455,
-    "sat": 1.3705690860863275,
-    "overlap": 0.08333333333333333,
-    "median": 124.0,
-    "lift": 3.1,
-    "hit": 0.24,
-    "npmi": 0.0657010830035129,
+    "n": 78,
+    "expected": 70.71970530019793,
+    "sat": 1.1029457725947522,
+    "overlap": 0.07692307692307693,
+    "median": 204.0,
+    "lift": 5.1,
+    "hit": 0.3717948717948718,
+    "npmi": 0.02059078576271922,
     "edge": false
   },
   "planb": {
     "pair": [
-      "Pixel Graphics",
-      "RPG"
+      "Horror",
+      "Multiplayer"
     ],
-    "n": 133,
-    "expected": 105.76380030789531,
-    "sat": 1.257519109684181,
-    "overlap": 0.0,
-    "median": 70.0,
-    "lift": 1.75,
-    "hit": 0.12781954887218044,
-    "npmi": 0.05423424383215394,
+    "n": 114,
+    "expected": 92.7034308335166,
+    "sat": 1.2297279504652776,
+    "overlap": 0.08333333333333333,
+    "median": 117.0,
+    "lift": 2.925,
+    "hit": 0.22807017543859648,
+    "npmi": 0.0472219363079099,
     "edge": false
   },
   "crowd": {
     "pair": [
-      "Management",
+      "Building",
       "Simulation"
     ],
-    "n": 121,
-    "expected": 31.760281504288542,
-    "sat": 3.8097899095655543,
+    "n": 74,
+    "expected": 29.13569386408621,
+    "sat": 2.5398399758454104,
     "overlap": 0.07692307692307693,
-    "median": 127.0,
-    "lift": 3.175,
-    "hit": 0.23140495867768596,
-    "npmi": 0.3096537564080779,
+    "median": 136.5,
+    "lift": 3.4125,
+    "hit": 0.28378378378378377,
+    "npmi": 0.19373144488492847,
     "edge": true
   },
   "hit_cut": 726.0,
@@ -158,11 +166,11 @@
     },
     {
       "param": "K=10",
-      "rank": 11.0
+      "rank": 13.0
     },
     {
       "param": "K=20",
-      "rank": 81.0
+      "rank": 29.0
     },
     {
       "param": "generic>20%",
@@ -189,8 +197,10 @@
       "rank": NaN
     }
   ],
-  "eligible": 30,
-  "scored_pairs": 136,
-  "fig_nodes": 16,
-  "fig_edges": 22
+  "eligible": 32,
+  "scored_pairs": 135,
+  "fig_nodes": 14,
+  "fig_edges": 18,
+  "colour_lo": 34.0,
+  "colour_hi": 119.0
 }

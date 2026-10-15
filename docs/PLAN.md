@@ -118,3 +118,15 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - The broker (betweenness) finding was dropped because no action followed from it.
 - **Figure fix (2026-10-15):** no straight edge may pass under a node that is not one of its ends (15 px clearance). The two dashed pair lines curve (arc3) around any node in the way. Layout is Kamada-Kawai spaced by hops, tried from 41 fixed-seed starts × 24 rotations/flips. Each label must be clearly nearer its own node than any other, with a 15 px gap between labels. The search keeps the drawing whose most ambiguous label is clearest.
 - **Wording (2026-10-15):** "no edge" now reads "near chance, no edge" (NPMI below the 0.10 cutoff). The pair exists in the data: Horror × Multiplayer has 75 games, NPMI 0.066. The plan B label is an HTML overlay on the figure. A line under the pair table defines exp. and over-supply.
+
+## Third revision: tag resolution and readability (2026-10-15)
+- **Cold-read review:** a fresh agent read only the PDF and found that Horror × Online Co-Op was already 2.2× crowded. 84% of Horror × Multiplayer games were also tagged co-op.
+- **Tags merged:** Co-op, Online/Local Co-Op, Co-op Campaign, Local Multiplayer and 4 Player Local are now merged into Multiplayer (`tagnet.RESOLVE`).
+- **New result:**
+  - Pick: First-Person × Multiplayer. 78 games (71 expected), crowding 1.10×, 5.1× median reviews.
+  - #1 in 59/100 bootstraps, top 3 in 74/100.
+  - Plan B: Horror × Multiplayer. #3: Pixel Graphics × RPG.
+- **Figure:**
+  - Node positions are hand-designed (`MANUAL` in the notebook), with an automatic fallback.
+  - Pair call-outs and the colour key are written on the page in HTML.
+- **True 10pt:** Chrome had been shrinking an over-wide page to fit. `04_report.py` now asserts that the text is unscaled.

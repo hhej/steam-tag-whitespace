@@ -17,7 +17,7 @@ td:first-child { font-weight: 600; color: #1f2a6b; white-space: nowrap; width: 1
 tr:last-child td { border-bottom: 0.5px solid #d6d5cf; }
 figure { margin: 1mm 0 0; text-align: center; }
 figure img { width: 100%; display: block; }
-.figwrap { position: relative; width: 72%; margin: 0 auto; }
+.figwrap { position: relative; width: 64%; margin: 0 auto; }
 ul { margin: 0; padding-left: 4.2mm; }
 li { margin-bottom: 0.4mm; }
 b.hl { color: #c4501f; }
@@ -28,16 +28,23 @@ table.pairs { margin-top: 1mm; }
 table.pairs th { font-weight: 600; color: #1f2a6b; text-align: right; padding: 0.3mm 1mm; border-bottom: 0.5px solid #d6d5cf; }
 table.pairs td { text-align: right; }
 table.pairs th:first-child, table.pairs td:first-child { text-align: left; }
-table.pairs td:first-child { color: #52514e; border-left: 3px solid transparent; padding-left: 1.5mm; }
-table.pairs td:nth-child(2) { font-weight: 600; text-align: left; }
-table.pairs th:nth-child(2) { text-align: left; }
+table.pairs td:first-child { font-weight: 600; border-left: 3px solid transparent; padding-left: 1.5mm; white-space: nowrap; }
+.role { color: #52514e; font-weight: 400; }
 table.pairs tr.pick td:first-child { border-left-color: #eb6834; }
 table.pairs tr.planb td:first-child { border-left-color: #7a4fc9; }
-.row.tables { grid-template-columns: 0.88fr 1.12fr; }
-table.pairs td:nth-child(2) { white-space: nowrap; }
+.row.tables { grid-template-columns: 0.86fr 1.14fr; }
 .intro { margin-top: 1mm; }
-.planb-note { position: absolute; right: 31%; bottom: 3%; text-align: right; color: #7a4fc9; font-weight: 700;
-               font-size: 6.5pt; line-height: 1.15; }  /* part of the figure, sized like the orange call-out in the image */
 .note { font-size: 10pt; color: #52514e; margin-top: 0.3mm; }
 .rule { margin-top: 1mm; }
 table.pairs th { white-space: nowrap; }
+/* labels drawn over the figure (part of the figure, sized like figure text) */
+.fig-note { position: absolute; font-size: 6.5pt; line-height: 1.15; font-weight: 700; text-align: left; }
+.fig-note.pick { color: #eb6834; left: 1%; bottom: 2%; }
+.fig-note.planb { color: #7a4fc9; left: 1%; top: 2%; }
+.fig-key { position: absolute; left: 35%; top: 1%; font-size: 6pt; line-height: 1.1; color: #52514e; width: 13%; text-align: center; }
+.fig-key .ramp { display: inline-block; width: 90%; height: 1.4mm;
+                 background: linear-gradient(90deg, #cfe3f7, #86b6ef, #3987e5, #1c5cab, #0d366b); }
+.fig-key .lo, .fig-key .hi { display: inline-block; width: 45%; }
+.fig-key .lo { text-align: left; } .fig-key .hi { text-align: right; }
+
+.row.bottom { grid-template-columns: 0.96fr 1.04fr; }

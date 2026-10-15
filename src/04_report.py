@@ -14,7 +14,7 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 REPO = "https://github.com/hhej/steam-tag-whitespace"
-TITLE = "Which Steam tag pair should an indie studio build? {A} × {B}"
+TITLE = "Which tag pair should an indie game use? {A} × {B}"
 
 N = json.loads((ROOT / "outputs/numbers.json").read_text())
 A, B = N["best"]
@@ -30,8 +30,9 @@ def pct(x):
 
 
 def row(r, role, cls=""):
-    return (f'<tr class="{cls}"><td>{role}</td><td>{r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
-            f'<td>{r["sat"]:.1f}×</td><td>{pct(r["overlap"])}</td><td>{r["median"]:.0f} ({r["lift"]:.1f}× {N["median_reviews"]:.0f})</td></tr>')
+    return (f'<tr class="{cls}"><td><span class="role">{role}:</span> {r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
+            f'<td>{r["sat"]:.2f}×</td><td>{pct(r["overlap"])}</td><td>{r["npmi"]:.2f}</td>'
+            f'<td>{r["median"]:.0f} ({r["lift"]:.1f}×)</td></tr>')
 
 
 pk, pb, cr = N["pick"], N["planb"], N["crowd"]
@@ -48,13 +49,16 @@ V = dict(
     n_ab=pk["n"], exp=f"{pk['expected']:.0f}", sat=f"{pk['sat']:.2f}", ov=pct(pk["overlap"]), med=f"{pk['median']:.0f}",
     lift=f"{pk['lift']:.1f}", cmed=f"{N['median_reviews']:.0f}",
     perm="p &lt; 0.001" if N["perm_p"] < 0.001 else f"p = {N['perm_p']:.3f}",
-    hit=pct(pk["hit"]), hit_cut=f"{N['hit_cut']:,.0f}", clift=f"{cr['lift']:.1f}", csat=f"{cr['sat']:.1f}",
+    hit=pct(pk["hit"]), hit_cut=f"{N['hit_cut']:,.0f}", clift=f"{cr['lift']:.1f}", csat=f"{cr['sat']:.2f}",
     top10_crowded=N["top10_lift_crowded"], cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
     rows=row(pk, "Pick", "pick") + row(pb, "Plan B", "planb") + row(cr, "Crowded"),
     npmi=f"{pk['npmi']:.2f}", pbn=pb["n"], pbexp=f"{pb['expected']:.0f}", pblift=f"{pb['lift']:.1f}",
-    pbnpmi=f"{pb['npmi']:.2f}",
+    pbnpmi=f"{pb['npmi']:.2f}", pbsat=f"{pb['sat']:.2f}", top3=N["boot_top3"],
+    coop=pct(N["unmerged_hm_coop"] / N["unmerged_hm_n"]), horror=pct(N["pick_horror"] / pk["n"]),
+    top_game=N["pick_top_game"], TA=N["third"][0], TB=N["third"][1],
+    col_lo=f"{N['colour_lo']:.0f}", col_hi=f"{N['colour_hi']:.0f}",
 )
 assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
 V["title"] = TITLE.format(**V)

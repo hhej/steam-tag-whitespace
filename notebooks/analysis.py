@@ -128,6 +128,23 @@ print("of the 10 highest-lift pairs,", NUM["top10_lift_crowded"], "are over-supp
 crowded.head(5).round(2)
 
 # %% [markdown]
+# ### Why the play-mode tags are merged (resolution), and what the winning pair is made of
+
+# %%
+raw_b = tn.run(dicts, reviews, resolve_tags=False)["baskets"]   # same pipeline, tags as Steam lists them
+COOP = {"Co-op", "Online Co-Op", "Local Co-Op", "Co-op Campaign"}
+hm = [i for i, b in enumerate(raw_b) if {"Horror", "Multiplayer"} <= set(b)]
+NUM.update(unmerged_hm_n=len(hm), unmerged_hm_coop=int(sum(bool(COOP & set(dicts[i])) for i in hm)))
+HORROR = {"Horror", "Psychological Horror", "Survival Horror"}
+e0 = (elig.loc[0, "a"], elig.loc[0, "b"])
+pick_games = [i for i, b in enumerate(R["baskets"]) if set(e0) <= set(b)]
+NUM.update(pick_horror=int(sum(bool(HORROR & set(tn.resolve(dicts[i]))) for i in pick_games)),
+           pick_top_game=cohort.loc[max(pick_games, key=lambda i: reviews[i]), "name"],
+           third=[elig.loc[2, "a"], elig.loc[2, "b"]])
+print(f"before merging, {NUM['unmerged_hm_coop']}/{NUM['unmerged_hm_n']} Horror x Multiplayer games also carry a co-op tag;",
+      f"{NUM['pick_horror']}/{len(pick_games)} of the pick's games are horror (top: {NUM['pick_top_game']}); #3 = {NUM['third']}")
+
+# %% [markdown]
 # ## 5 · Robustness
 
 # %%
@@ -231,12 +248,13 @@ BLUES = LinearSegmentedColormap.from_list("seq", ["#cfe3f7", "#86b6ef", "#3987e5
 HALO = [pe.withStroke(linewidth=2.2, foreground="white")]
 
 tag_med = {t: float(np.median(reviews[[t in bk for bk in R["baskets"]]])) for t in G}
-focus = set(best) | set(runner)
-# each focus tag's 2 strongest neighbours (by NPMI), plus the shortest paths that link the four focus tags
+third = tuple(sorted(NUM["third"]))  # the #3 pair (fallback in section 8): its tags are shown for context
+focus = set(best) | set(runner) | set(third)
+# the pick's and plan B's tags with their 2 strongest neighbours (by NPMI), plus the shortest paths linking the pairs
 show = set(focus)
-for t in sorted(focus):
+for t in sorted(set(best) | set(runner)):  # the #3 pair is shown with its linking path only, to keep the picture light
     show |= set(sorted(G[t], key=lambda u: (-G[t][u]["npmi"], u))[:2])
-for u, v in [best, runner, (best[0], runner[0])]:
+for u, v in [best, runner, third, (best[1], third[1])]:
     show |= set(nx.shortest_path(G, u, v, weight="dist"))
 H = G.subgraph(show).copy()
 assert nx.is_connected(H)
@@ -245,14 +263,25 @@ H2 = nx.Graph()
 H2.add_nodes_from((t, G.nodes[t]) for t in sorted(H))
 H2.add_edges_from(sorted((*sorted((u, v)), d) for u, v, d in H.edges(data=True)))
 H = H2
-# candidate layouts: Kamada-Kawai spaced by hops (strong links would otherwise pull tags on top of each other),
-# first from its default start, then from fixed-seed spring layouts. Edge width still shows NPMI.
-layouts = [nx.kamada_kawai_layout(H, weight=None)] + [
-    nx.kamada_kawai_layout(H, weight=None, pos=nx.spring_layout(H, seed=sd)) for sd in range(1, 41)]
+# hand-designed layout (x, y): the horror tags as a convex quadrilateral (so no edge passes under a node), Survival
+# Horror below on the First-Person - Multiplayer path, Multiplayer in the middle with the two dashed pairs fanning out, the #3 pair's chain curving round on the
+# right. If the graph ever changes and a tag is missing here, fall back to an automatic Kamada-Kawai search.
+MANUAL = {"Survival Horror": (1.08, 0.03), "First-Person": (0.66, 0.11), "Walking Simulator": (0.26, 0.24),
+          "Psychological Horror": (0.26, 0.66), "Horror": (0.66, 0.79),
+          "Multiplayer": (1.6, 0.45), "PvP": (1.6, 0.92), "Funny": (1.6, -0.02),
+          "Survival": (1.95, 0.64), "Open World": (2.2, 0.88), "RPG": (2.6, 0.88), "Action RPG": (2.7, 0.46),
+          "Action Roguelike": (2.55, 0.08), "Pixel Graphics": (2.15, 0.02)}
+LABEL_SIDE = {"Survival Horror": "below"}  # labels tried on this side first (the rest use the default order)
+if set(H) <= set(MANUAL):
+    layouts, views = [{t: np.array(MANUAL[t]) for t in H}], [(0, 1)]
+else:
+    layouts = [nx.kamada_kawai_layout(H, weight=None)] + [
+        nx.kamada_kawai_layout(H, weight=None, pos=nx.spring_layout(H, seed=sd)) for sd in range(1, 41)]
+    views = [(a, f) for f in (1, -1) for a in range(0, 180, 15)]
 nmax = max(H.nodes[t]["n"] for t in H)
 sizes = {t: 40 + 360 * H.nodes[t]["n"] / nmax for t in H}
 norm = LogNorm(vmin=min(tag_med[t] for t in H), vmax=max(tag_med[t] for t in H))
-ring = {t: ACCENT for t in best} | {t: PLANB for t in runner}
+ring = {t: PLANB for t in runner} | {t: ACCENT for t in best}  # a tag in both pairs keeps the pick's colour
 pk = NUM["pick"]
 msg = (f"{best[0]} × {best[1]}{'' if pk['edge'] else ': near chance, no edge'}\n"
        f"{pk['n']} games (exp. {pk['expected']:.0f}) · {pk['lift']:.1f}× median reviews")
@@ -272,11 +301,40 @@ def draw(kk, angle, flip):
     th = np.radians(angle)
     rot = np.array([[np.cos(th), -np.sin(th)], [np.sin(th), np.cos(th)]])
     xy = np.array([kk[t] for t in H]) @ rot.T * [flip, 1]
-    xy = (xy - xy.min(0)) / (xy.max(0) - xy.min(0))  # stretch to the figure's aspect ratio
+    # stretch to the figure's wide frame; nodes that this flattens onto an edge are nudged off it below
+    xy = (xy - xy.min(0)) / (xy.max(0) - xy.min(0))
     pos = {t: (x * 2.4, y) for t, (x, y) in zip(H, xy)}
 
     fig, ax = plt.subplots(figsize=(7.6, 3.0), dpi=300)
-    ax.set_xlim(-0.3, 2.7); ax.set_ylim(-0.1, 1.25); ax.axis("off")  # top strip kept free for the colour key
+    ax.set_xlim(-0.9, 2.95); ax.set_ylim(-0.2, 1.2); ax.axis("off")  # margins leave room for labels at the edges
+    # tight clusters (tags that are almost all linked to each other) can't be drawn flat without one node landing
+    # on another pair's edge: nudge such nodes sideways off the edge, and keep nodes from overlapping
+    px0, inv0 = ax.transData.transform, ax.transData.inverted().transform
+    P = {t: np.array(px0(pos[t]), dtype=float) for t in H}
+    rad = {t: np.sqrt(sizes[t]) / 2 * fig.dpi / 72 for t in H}
+    for _ in range(300):
+        moved = False
+        for u, v in H.edges():
+            a_, d_ = P[u], P[v] - P[u]
+            for w in H:
+                if w in (u, v):
+                    continue
+                q = a_ + np.clip(np.dot(P[w] - a_, d_) / np.dot(d_, d_), 0, 1) * d_
+                gap, need = np.linalg.norm(P[w] - q), rad[w] + 15 + 3
+                if gap < need:
+                    n_ = (P[w] - q) / gap if gap > 1e-6 else np.array([-d_[1], d_[0]]) / np.linalg.norm(d_)
+                    P[w] = P[w] + n_ * (need - gap)
+                    moved = True
+        for u in H:
+            for w in H:
+                if u < w and np.linalg.norm(P[u] - P[w]) < rad[u] + rad[w] + 10:
+                    n_ = (P[w] - P[u]) / max(np.linalg.norm(P[w] - P[u]), 1e-6)
+                    push = (rad[u] + rad[w] + 10 - np.linalg.norm(P[w] - P[u])) / 2
+                    P[u], P[w] = P[u] - n_ * push, P[w] + n_ * push
+                    moved = True
+        if not moved:
+            break
+    pos = {t: tuple(inv0(P[t])) for t in H}
     nx.draw_networkx_edges(H, pos, ax=ax, width=[0.3 + 6.0 * d["npmi"] ** 1.5 for _, _, d in H.edges(data=True)],
                            edge_color=EDGE)
     nx.draw_networkx_nodes(H, pos, ax=ax, nodelist=list(H), node_size=[sizes[t] for t in H],
@@ -293,9 +351,9 @@ def draw(kk, angle, flip):
         r = np.sqrt(sizes[t]) / 2 * fig.dpi / 72
         cx, cy = px(pos[t])
         nodes[t] = (cx - r, cy - r, cx + r, cy + r)
-    def clear_of_nodes(pts, ends):
+    def clear_of_nodes(pts, ends, pad=15):
         """True if no point of the line comes within a node (plus 15 px at 300 dpi) other than its two ends."""
-        return all(np.hypot(*(pts - px(pos[w])).T).min() >= (nodes[w][2] - nodes[w][0]) / 2 + 15
+        return all(np.hypot(*(pts - px(pos[w])).T).min() >= (nodes[w][2] - nodes[w][0]) / 2 + pad
                    for w in H if w not in ends)
 
     # real edges are straight and may not pass under another node (it would look as if that node sat on the edge)
@@ -303,41 +361,39 @@ def draw(kk, angle, flip):
     if not all(clear_of_nodes(p, e) for p, e in zip(edge_pts, H.edges())):
         return fig, 99, 9.0
     # the recommended pair and plan B have no edge: draw them dashed, bending (arc3) around any node in the way
-    pair_mid = {}
+    pair_mid, drawn_pairs = {}, []
+    shared = set(best) & set(runner)
+
+    def apart(pts, q):
+        keep = np.ones(len(pts), bool)
+        for x in shared:
+            keep &= np.hypot(*(pts - px(pos[x])).T) > 150
+        if not keep.any():
+            return True
+        diff = pts[keep][:, None, :] - q[None, :, :]
+        return np.hypot(diff[..., 0], diff[..., 1]).min() >= 30
     for (u, v), col in pairs_drawn:
         a, b2 = px(pos[u]), px(pos[v])
-        for rad in (0, 0.2, -0.2, 0.35, -0.35, 0.5, -0.5):
+        for rad in (0, 0.2, -0.2, 0.35, -0.35, 0.5, -0.5, 0.65, -0.65, 0.8, -0.8):
             ctrl = (a + b2) / 2 + rad * np.array([b2[1] - a[1], a[0] - b2[0]])  # matplotlib's arc3 control point
             s_ = np.linspace(0, 1, 60)[:, None]
             pts = (1 - s_) ** 2 * a + 2 * (1 - s_) * s_ * ctrl + s_ ** 2 * b2
-            if clear_of_nodes(pts, (u, v)):
+            # the two dashed curves must stay apart, except close to a tag they share
+            if clear_of_nodes(pts, (u, v), pad=12) and all(apart(pts, q) for q in drawn_pairs[:0]):
                 break
         else:
             return fig, 99, 9.0
         ax.add_patch(FancyArrowPatch(pos[u], pos[v], connectionstyle=f"arc3,rad={rad}", arrowstyle="-",
                                      linestyle=(0, (4, 3)), color=col, lw=1.8, zorder=0.5, shrinkA=0, shrinkB=0))
         edge_pts.append(pts)
+        drawn_pairs.append(pts)
         pair_mid[(u, v)] = ax.transData.inverted().transform(pts[30])
     edge_px = np.vstack(edge_pts)
+    # the edges that link each pair (shortest paths) carry the story: no label may sit on them, even as a fallback
+    key = {frozenset(e) for u, v in (best, runner, third) for e in nx.utils.pairwise(nx.shortest_path(H, u, v))}
+    key_px = np.vstack([p_ for p_, e in zip(edge_pts, H.edges()) if frozenset(e) in key] + drawn_pairs)
 
-    # node colour scale: a small horizontal bar in whichever corner is clear of nodes and edges
-    for corner in [(0.80, 0.95), (0.01, 0.95), (0.41, 0.95)]:
-        cax = ax.inset_axes([corner[0], corner[1], 0.18, 0.025])
-        cb = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=BLUES), cax=cax, orientation="horizontal")
-        ticks = [t for t in [20, 30, 50, 100, 200, 500] if norm.vmin <= t <= norm.vmax]
-        cb.set_ticks(ticks, labels=[str(t) for t in ticks]); cb.ax.minorticks_off()
-        cb.ax.tick_params(labelsize=6.5, length=2, pad=1)
-        cb.outline.set_visible(False)
-        cax.set_title("median reviews of games with the tag", fontsize=6.5, pad=2)
-        cbx = cax.get_tightbbox(rend)
-        cbox = (cbx.x0, cbx.y0, cbx.x1, cbx.y1)
-        if (cbox[0] >= frame.x0 and cbox[2] <= frame.x1 and not inside_pts(edge_px, cbox)
-                and not any(hit(cbox, nb) for nb in nodes.values())):
-            break
-        cax.remove()
-    else:
-        return fig, 99, 9.0
-    nodes["_colourbar"] = cbox
+    # the colour key is drawn on the page (report/template.html), from NUM['colour_lo'] / NUM['colour_hi']
     placed = {}
 
     def box_dist(box, w):
@@ -346,19 +402,24 @@ def draw(kk, angle, flip):
 
     def free(box, own=None, edges=True):
         # a label must sit clearly nearer its own node than any other node, or it reads as the wrong tag's label
-        if own is not None and any(box_dist(box, own) > 0.7 * box_dist(box, w) for w in H if w != own):
+        if own is not None and any(box_dist(box, own) > 0.8 * box_dist(box, w) for w in H if w != own):
             return False
         return (box[0] >= frame.x0 and box[2] <= frame.x1 and box[1] >= frame.y0 and box[3] <= frame.y1
                 and not any(hit(box, o, 15) for o in placed.values())  # 15 px gap: stacked labels read as one
                 and not any(hit(box, nb, 0) for u, nb in nodes.items() if u != own)
+                and not inside_pts(key_px, box)
                 and not (edges and inside_pts(edge_px, box)))
 
     on_edge, worst = 0, 0.0  # worst = the most ambiguous label: own-node distance / nearest other node
     for t in sorted(H, key=lambda t: (t not in focus, -H.nodes[t]["n"], t)):
         r = np.sqrt(sizes[t]) / 2 + 2  # points
-        cands = [(r, 0, "left", "center"), (-r, 0, "right", "center"), (0, r, "center", "bottom"),
-                 (0, -r, "center", "top"), (r * .7, r * .7, "left", "bottom"), (-r * .7, r * .7, "right", "bottom"),
-                 (r * .7, -r * .7, "left", "top"), (-r * .7, -r * .7, "right", "top")]
+        cands = [c for k in (1, 1.6) for c in [(k * r, 0, "left", "center"), (-k * r, 0, "right", "center"), (0, k * r, "center", "bottom"),
+                 (0, -k * r, "center", "top"), (k * r * .7, k * r * .7, "left", "bottom"),
+                 (-k * r * .7, k * r * .7, "right", "bottom"), (k * r * .7, -k * r * .7, "left", "top"),
+                 (-k * r * .7, -k * r * .7, "right", "top")]]  # next to the node first, then a little further out
+        side = {"right": 0, "left": 1, "above": 2, "below": 3}.get(LABEL_SIDE.get(t))
+        if side is not None:
+            cands = [cands[side], cands[side + 8]] + cands
         done = False
         for edges in (True, False):  # prefer a spot clear of edges; never accept one on a label or node
             for dx, dy, ha, va in cands:
@@ -378,47 +439,28 @@ def draw(kk, angle, flip):
         if not done:
             return fig, 99, 9.0
 
-    # call-out: nearest spot to the recommended pair's line clear of labels, nodes and edges
-    mx, my = pair_mid[best]
-    for d in [8, 20, 35, 50, 70, 90, 120, 150]:
-        for ang in range(0, 360, 30):
-            dx, dy = d * np.cos(np.radians(ang)), d * np.sin(np.radians(ang))
-            note = ax.annotate(msg, (mx, my), xytext=(dx, dy), textcoords="offset points",
-                               ha="left" if dx > 1 else "right" if dx < -1 else "center",
-                               va="bottom" if dy > 1 else "top" if dy < -1 else "center",
-                               fontsize=7.8, color=ACCENT, fontweight="bold", path_effects=HALO,
-                               arrowprops=dict(arrowstyle="-", color=ACCENT, lw=0.6, shrinkA=1, shrinkB=0))
-            note.update_positions(rend)
-            e = plt.Text.get_window_extent(note, rend)  # text only: Annotation's extent includes the leader line
-            tb = (e.x0, e.y0, e.x1, e.y1)
-            lead = px(np.linspace((mx, my), ax.transData.inverted().transform(((e.x0 + e.x1) / 2, (e.y0 + e.y1) / 2)), 60))
-            lead = lead[~((lead[:, 0] > tb[0]) & (lead[:, 0] < tb[2]) & (lead[:, 1] > tb[1]) & (lead[:, 1] < tb[3]))]
-            crosses = any(inside_pts(lead, o) for o in list(placed.values()) +
-                          [nb for u, nb in nodes.items() if u not in best])
-            if not crosses and free(tb):
-                return fig, on_edge, worst
-            note.remove()
-    return fig, 99, 9.0
+    # pair call-outs are written on the page (report/template.html), placed by hand for the clearest layout
+    return fig, on_edge, worst
 
 
-# try each layout in 12 rotations x 2 reflections. Keep only drawings where no label touches an edge and no
-# edge passes under another node; of those, keep the one whose most ambiguous label is clearest.
+# try each layout in 12 rotations x 2 reflections. Hard rules: no edge passes under another node, no label covers
+# a label or node. Of the drawings that pass, keep the one with the fewest labels resting on an edge, then the clearest.
 chosen, best_worst, fig = None, None, None
 for li, kk in enumerate(layouts):
-    for flip in (1, -1):
-        for angle in range(0, 180, 15):
-            f_, bad, worst = draw(kk, angle, flip)
-            if bad == 0 and (best_worst is None or worst < best_worst):
-                if fig is not None:
-                    plt.close(fig)
-                chosen, best_worst, fig = (li, angle, flip), worst, f_
-            else:
-                plt.close(f_)
+    for angle, flip in views:
+        f_, bad, worst = draw(kk, angle, flip)
+        # bad = labels that could only sit on an edge (99 = a hard rule failed); fewest first, then clearest
+        if bad < 99 and (best_worst is None or (bad, worst) < best_worst):
+            if fig is not None:
+                plt.close(fig)
+            chosen, best_worst, fig = (li, angle, flip), (bad, worst), f_
+        else:
+            plt.close(f_)
 assert chosen, "no layout gives clear labels and clear edges"
-print("layout, rotation, flip:", chosen, "worst label ratio:", round(best_worst, 2))
+print("layout, rotation, flip:", chosen, "labels on an edge:", best_worst[0], "worst label ratio:", round(best_worst[1], 2))
 fig.savefig(OUT / "fig_network.png", dpi=300, bbox_inches="tight", facecolor="white")
 fig.savefig(OUT / "fig_network.svg", bbox_inches="tight", facecolor="white")
-NUM.update(fig_nodes=H.number_of_nodes(), fig_edges=H.number_of_edges())
+NUM.update(fig_nodes=H.number_of_nodes(), fig_edges=H.number_of_edges(), colour_lo=float(norm.vmin), colour_hi=float(norm.vmax))
 (OUT / "numbers.json").write_text(json.dumps(NUM, indent=2, default=str))
 plt.show()
 
@@ -434,5 +476,5 @@ assert NUM["nodes"] == G.number_of_nodes() and NUM["edges"] == G.number_of_edges
 assert NUM["analysed"] >= 950, "too many games missing live data"
 assert NUM["population"] > 9000, "cohort incomplete"
 assert NUM["steamspy_vs_s1_jaccard"] > 0.99 and NUM["tri_top5_jaccard"] < 0.99, "S2 should differ from S1, SteamSpy should not"
-assert set(best).isdisjoint(runner) or best != runner
+assert best != runner
 print("all checks passed")

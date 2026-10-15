@@ -20,6 +20,11 @@ NON_DESIGN = {"Early Access", "Free to Play", "Sexual Content", "Nudity", "NSFW"
               "Video Production", "Animation & Modeling", "Photo Editing", "Web Publishing",
               "Education", "Software Training", "Accounting"}
 
+# Resolution: tags that name the same play mode are merged into one node (votes = the highest of the merged tags).
+# 84% of Horror x Multiplayer games also carry a co-op tag, so keeping them apart would hide crowding.
+RESOLVE = {t: "Multiplayer" for t in ["Co-op", "Online Co-Op", "Local Co-Op", "Co-op Campaign", "Local Multiplayer",
+                                      "4 Player Local"]}
+
 # min_tag, min_co, min_pair below 1 are shares of the games analysed (1.5%, 0.5%, 0.8% = 15, 5, 8 per 1,000 games)
 DEFAULTS = dict(k=5, generic_df=0.25, min_tag=0.015, npmi_cut=0.10, min_co=0.005,
                 min_pair=0.008, max_sat=1.5, max_overlap=0.2)
@@ -169,8 +174,19 @@ def pair_table(baskets, reviews, G, p):
     return t.sort_values(["lift", "n_ab", "a", "b"], ascending=[False, False, True, True]).reset_index(drop=True)
 
 
-def run(tag_dicts, reviews, **kw):
+def resolve(tags):
+    """Merge same-play-mode tags (RESOLVE) into one, keeping the highest vote count; re-sort by votes."""
+    out = {}
+    for t, v in tags.items():
+        c = RESOLVE.get(t, t)
+        out[c] = max(out.get(c, 0), v)
+    return dict(sorted(out.items(), key=lambda kv: -kv[1]))
+
+
+def run(tag_dicts, reviews, resolve_tags=True, **kw):
     """Full pipeline for one parameter setting. Returns graph, brokers, pair table, generic set."""
+    if resolve_tags:
+        tag_dicts = [resolve(d) for d in tag_dicts]
     p = {**DEFAULTS, **kw}
     for key in ("min_tag", "min_co", "min_pair"):
         if p[key] < 1:
