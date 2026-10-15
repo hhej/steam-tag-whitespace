@@ -11,7 +11,7 @@
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
     <p>An indie studio's creative director picks the next game's two lead tags; if no pair passed the selection
-    rule, they would pick a crowded pair (table).</p></section>
+    rule (section 5), they would pick a crowded pair (table).</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
     <p>Counts show how common a pair is and how well it sells, not whether its tags belong to separate groups or
     which tag connects them. That needs the network.</p></section>
@@ -49,14 +49,14 @@
   <circle cx="1498" cy="149" r="42" fill="none" stroke="#1a9e8f" stroke-width="10"/>
   <line x1="1312" y1="563" x2="1480" y2="190" stroke="#1a9e8f" stroke-width="7.5" stroke-dasharray="30 22"/>
   <!-- inset: the crowded comparison pair, which sits elsewhere in the network; a solid line = it HAS an edge -->
-  <rect x="1462" y="608" width="362" height="142" rx="10" fill="#ffffff" stroke="#c9c8c2" stroke-width="3"/>
-  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">Crowded: 3.80× expected games</text>
-  <text x="1643" y="672" text-anchor="middle" font-size="20" fill="#52514e">has an edge (NPMI 0.31)</text>
-  <line x1="1530" y1="690" x2="1756" y2="690" stroke="#9a9993" stroke-width="8"/>
-  <circle cx="1530" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
-  <circle cx="1756" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
-  <text x="1530" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">Management</text>
-  <text x="1756" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">Simulation</text>
+  <rect x="1460" y="604" width="364" height="147" rx="10" fill="#ffffff" stroke="#c9c8c2" stroke-width="3"/>
+  <text x="1642" y="636" text-anchor="middle" font-size="27" fill="#52514e">Crowded: 3.80× expected</text>
+  <text x="1642" y="668" text-anchor="middle" font-size="25" fill="#52514e">has an edge (NPMI 0.31)</text>
+  <line x1="1545" y1="690" x2="1752" y2="690" stroke="#9a9993" stroke-width="8"/>
+  <circle cx="1545" cy="690" r="17" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
+  <circle cx="1752" cy="690" r="17" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
+  <text x="1545" y="740" text-anchor="middle" font-size="27" fill="#0b0b0b">Management</text>
+  <text x="1752" y="740" text-anchor="middle" font-size="27" fill="#0b0b0b">Simulation</text>
 </svg>
 <div class="fig-note third">#3: Pixel Graphics × RPG: no edge<br>133 games (expected 107)<br>1.7× positive reviews</div>
 <div class="fig-note pick">#1: First-Person ×<br>Multiplayer: no edge<br>78 games (expected 71) · 4.3× positive reviews</div>
@@ -75,20 +75,20 @@ stable medians), keep crowding ≤ 1.5 and ≤20% of combined neighbours shared;
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
     <li><b>#1</b>: 78 games vs 71 expected (NPMI 0.02, under the 0.10 edge cutoff), yet 4.3× typical positive
-      reviews (permutation test, p &lt; 0.001); horror overall 1.0×. An association, not proof of cause; reach, not rating (76% positive).</li>
-    <li><b>Survival Horror</b> is the only tag connecting #1's two groups of neighbours: the early warning.</li>
-    <li><b>Narrow lead:</b> top at all 8 pruning settings but in 60 of 100 resamples; 2025 games: crowding 1.14,
-      2.2× (less time to collect reviews).</li>
+      reviews (permutation test, p &lt; 0.001); horror games overall 1.0× typical. An association, not cause; reach, not rating (76% positive).</li>
+    <li><b>Survival Horror</b> is the only tag linking #1's two neighbour groups; if it spreads, the gap closes.</li>
+    <li><b>Narrow lead:</b> top at all 8 pruning settings (4 NPMI cutoffs × 2 minimums) but in 60 of
+      100 resamples; 2025 games: crowding 1.14, 2.2× positive reviews.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch a first-person multiplayer game.</li>
-    <li>Weeks 1–6: prototype; playtests must beat 76% positive.</li>
+    <li>Week 0: pitch the game.</li>
+    <li>Weeks 1–6: prototype; playtest target 87% positive.</li>
     <li>Week 7: Coming Soon page with both tags.</li>
     <li>Quarterly: re-check crowding.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>If #1's or Survival Horror's crowding passes 1.5, I switch to #2 (1.45 in 2025), then #3; if playtests stay
-    below 76% positive, to #3 (88%).</p>
+    <p>If #1's crowding passes 1.5 or Survival Horror's share of releases rises, I switch to #2 (1.45 in 2025), then #3;
+    if playtests miss 87%, to #3 (88% positive).</p>
   </section>
 </div>
 </body></html>
