@@ -223,6 +223,7 @@ pd.DataFrame([NUM["pick"], NUM["planb"], NUM["crowd"]]).round(2)
 
 # %%
 import matplotlib.patheffects as pe
+from matplotlib.patches import FancyArrowPatch
 from matplotlib.colors import LinearSegmentedColormap, LogNorm
 
 INK, EDGE, ACCENT, PLANB = "#0b0b0b", "#d3d2cc", "#eb6834", "#7a4fc9"
@@ -244,7 +245,10 @@ H2 = nx.Graph()
 H2.add_nodes_from((t, G.nodes[t]) for t in sorted(H))
 H2.add_edges_from(sorted((*sorted((u, v)), d) for u, v, d in H.edges(data=True)))
 H = H2
-kk = nx.kamada_kawai_layout(H, weight="dist")
+# candidate layouts: Kamada-Kawai spaced by hops (strong links would otherwise pull tags on top of each other),
+# first from its default start, then from fixed-seed spring layouts. Edge width still shows NPMI.
+layouts = [nx.kamada_kawai_layout(H, weight=None)] + [
+    nx.kamada_kawai_layout(H, weight=None, pos=nx.spring_layout(H, seed=sd)) for sd in range(1, 41)]
 nmax = max(H.nodes[t]["n"] for t in H)
 sizes = {t: 40 + 360 * H.nodes[t]["n"] / nmax for t in H}
 norm = LogNorm(vmin=min(tag_med[t] for t in H), vmax=max(tag_med[t] for t in H))
@@ -262,7 +266,7 @@ def inside_pts(pts, box):
     return ((pts[:, 0] > box[0] + 1) & (pts[:, 0] < box[2] - 1) & (pts[:, 1] > box[1] + 1) & (pts[:, 1] < box[3] - 1)).any()
 
 
-def draw(angle, flip):
+def draw(kk, angle, flip):
     """Draw the graph with the layout rotated/flipped; place labels where they touch no label, node or edge.
     Returns the figure and the number of labels that could only be placed on top of an edge."""
     th = np.radians(angle)
@@ -280,9 +284,6 @@ def draw(angle, flip):
                            linewidths=[2.4 if t in ring else 0.8 for t in H],
                            edgecolors=[ring.get(t, "white") for t in H])
     pairs_drawn = [(best, ACCENT), (runner, PLANB)]
-    for (u, v), col in pairs_drawn:
-        (xa, ya), (xb, yb) = pos[u], pos[v]
-        ax.plot([xa, xb], [ya, yb], ls=(0, (4, 3)), color=col, lw=1.8, zorder=0.5)
     fig.canvas.draw()
     rend = fig.canvas.get_renderer()
     frame = ax.get_window_extent(rend)
@@ -292,8 +293,32 @@ def draw(angle, flip):
         r = np.sqrt(sizes[t]) / 2 * fig.dpi / 72
         cx, cy = px(pos[t])
         nodes[t] = (cx - r, cy - r, cx + r, cy + r)
-    segs = [(pos[u], pos[v]) for u, v in H.edges()] + [(pos[u], pos[v]) for (u, v), _ in pairs_drawn]
-    edge_px = np.vstack([px(np.linspace(p, q, 40)) for p, q in segs])
+    def clear_of_nodes(pts, ends):
+        """True if no point of the line comes within a node (plus 15 px at 300 dpi) other than its two ends."""
+        return all(np.hypot(*(pts - px(pos[w])).T).min() >= (nodes[w][2] - nodes[w][0]) / 2 + 15
+                   for w in H if w not in ends)
+
+    # real edges are straight and may not pass under another node (it would look as if that node sat on the edge)
+    edge_pts = [px(np.linspace(pos[u], pos[v], 40)) for u, v in H.edges()]
+    if not all(clear_of_nodes(p, e) for p, e in zip(edge_pts, H.edges())):
+        return fig, 99, 9.0
+    # the recommended pair and plan B have no edge: draw them dashed, bending (arc3) around any node in the way
+    pair_mid = {}
+    for (u, v), col in pairs_drawn:
+        a, b2 = px(pos[u]), px(pos[v])
+        for rad in (0, 0.2, -0.2, 0.35, -0.35, 0.5, -0.5):
+            ctrl = (a + b2) / 2 + rad * np.array([b2[1] - a[1], a[0] - b2[0]])  # matplotlib's arc3 control point
+            s_ = np.linspace(0, 1, 60)[:, None]
+            pts = (1 - s_) ** 2 * a + 2 * (1 - s_) * s_ * ctrl + s_ ** 2 * b2
+            if clear_of_nodes(pts, (u, v)):
+                break
+        else:
+            return fig, 99, 9.0
+        ax.add_patch(FancyArrowPatch(pos[u], pos[v], connectionstyle=f"arc3,rad={rad}", arrowstyle="-",
+                                     linestyle=(0, (4, 3)), color=col, lw=1.8, zorder=0.5, shrinkA=0, shrinkB=0))
+        edge_pts.append(pts)
+        pair_mid[(u, v)] = ax.transData.inverted().transform(pts[30])
+    edge_px = np.vstack(edge_pts)
 
     # node colour scale: a small horizontal bar in whichever corner is clear of nodes and edges
     for corner in [(0.80, 0.95), (0.01, 0.95), (0.41, 0.95)]:
@@ -311,17 +336,24 @@ def draw(angle, flip):
             break
         cax.remove()
     else:
-        return fig, 99
+        return fig, 99, 9.0
     nodes["_colourbar"] = cbox
     placed = {}
 
+    def box_dist(box, w):
+        cx, cy = px(pos[w])
+        return np.hypot(max(box[0] - cx, 0, cx - box[2]), max(box[1] - cy, 0, cy - box[3]))
+
     def free(box, own=None, edges=True):
+        # a label must sit clearly nearer its own node than any other node, or it reads as the wrong tag's label
+        if own is not None and any(box_dist(box, own) > 0.7 * box_dist(box, w) for w in H if w != own):
+            return False
         return (box[0] >= frame.x0 and box[2] <= frame.x1 and box[1] >= frame.y0 and box[3] <= frame.y1
-                and not any(hit(box, o) for o in placed.values())
+                and not any(hit(box, o, 15) for o in placed.values())  # 15 px gap: stacked labels read as one
                 and not any(hit(box, nb, 0) for u, nb in nodes.items() if u != own)
                 and not (edges and inside_pts(edge_px, box)))
 
-    on_edge = 0
+    on_edge, worst = 0, 0.0  # worst = the most ambiguous label: own-node distance / nearest other node
     for t in sorted(H, key=lambda t: (t not in focus, -H.nodes[t]["n"], t)):
         r = np.sqrt(sizes[t]) / 2 + 2  # points
         cands = [(r, 0, "left", "center"), (-r, 0, "right", "center"), (0, r, "center", "bottom"),
@@ -336,6 +368,7 @@ def draw(angle, flip):
                 e = txt.get_window_extent(rend)
                 if free((e.x0, e.y0, e.x1, e.y1), own=t, edges=edges):
                     placed[t] = (e.x0, e.y0, e.x1, e.y1)
+                    worst = max(worst, box_dist(placed[t], t) / min(box_dist(placed[t], w) for w in H if w != t))
                     done = True
                     on_edge += not edges
                     break
@@ -343,11 +376,10 @@ def draw(angle, flip):
             if done:
                 break
         if not done:
-            return fig, 99
+            return fig, 99, 9.0
 
     # call-out: nearest spot to the recommended pair's line clear of labels, nodes and edges
-    (xa, ya), (xb, yb) = pos[best[0]], pos[best[1]]
-    mx, my = (xa + xb) / 2, (ya + yb) / 2
+    mx, my = pair_mid[best]
     for d in [8, 20, 35, 50, 70, 90, 120, 150]:
         for ang in range(0, 360, 30):
             dx, dy = d * np.cos(np.radians(ang)), d * np.sin(np.radians(ang))
@@ -364,24 +396,26 @@ def draw(angle, flip):
             crosses = any(inside_pts(lead, o) for o in list(placed.values()) +
                           [nb for u, nb in nodes.items() if u not in best])
             if not crosses and free(tb):
-                return fig, on_edge
+                return fig, on_edge, worst
             note.remove()
-    return fig, 99
+    return fig, 99, 9.0
 
 
-# try 12 rotations x 2 reflections of the same layout; keep the first with no label on an edge
-chosen = None
-for flip in (1, -1):
-    for angle in range(0, 180, 15):
-        fig, bad = draw(angle, flip)
-        if bad == 0:
-            chosen = (angle, flip)
-            break
-        plt.close(fig)
-    if chosen:
-        break
-assert chosen, "no rotation of the layout gives clear labels"
-print("layout rotation, flip:", chosen)
+# try each layout in 12 rotations x 2 reflections. Keep only drawings where no label touches an edge and no
+# edge passes under another node; of those, keep the one whose most ambiguous label is clearest.
+chosen, best_worst, fig = None, None, None
+for li, kk in enumerate(layouts):
+    for flip in (1, -1):
+        for angle in range(0, 180, 15):
+            f_, bad, worst = draw(kk, angle, flip)
+            if bad == 0 and (best_worst is None or worst < best_worst):
+                if fig is not None:
+                    plt.close(fig)
+                chosen, best_worst, fig = (li, angle, flip), worst, f_
+            else:
+                plt.close(f_)
+assert chosen, "no layout gives clear labels and clear edges"
+print("layout, rotation, flip:", chosen, "worst label ratio:", round(best_worst, 2))
 fig.savefig(OUT / "fig_network.png", dpi=300, bbox_inches="tight", facecolor="white")
 fig.savefig(OUT / "fig_network.svg", bbox_inches="tight", facecolor="white")
 NUM.update(fig_nodes=H.number_of_nodes(), fig_edges=H.number_of_edges())

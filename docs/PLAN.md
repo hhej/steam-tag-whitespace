@@ -116,3 +116,4 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - A 3-row pair table, so the findings' numbers appear in a table.
   - Actions with relative weeks.
   - The broker (betweenness) finding was dropped because no action followed from it.
+- **Figure fix (2026-10-15):** no straight edge may pass under a node that is not one of its ends (15 px clearance). The two dashed pair lines curve (arc3) around any node in the way. Layout is Kamada-Kawai spaced by hops, tried from 41 fixed-seed starts × 24 rotations/flips. Each label must be clearly nearer its own node than any other, with a 15 px gap between labels. The search keeps the drawing whose most ambiguous label is clearest.
