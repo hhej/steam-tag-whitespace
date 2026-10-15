@@ -56,7 +56,7 @@
 <div class="fig-note third">#3: {TA} × {TB}: no edge<br>{t3n} games (expected {t3exp})<br>{t3lift}× positive reviews</div>
 <div class="fig-note pick">#1: {A} ×<br>{B}: no edge<br>{n_ab} games (expected {exp}) · {lift}× positive reviews</div>
 <div class="fig-note planb">#2: {PA} × {PB}: no edge<br>{pbn} games (expected {pbexp})<br>{pblift}× positive reviews</div>
-<div class="fig-key">positive reviews<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
+<div class="fig-key">positive reviews/tag<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
 <figcaption><b>First-Person and Multiplayer have no direct link; the shortest route between them goes through {bridge} ({hops} links). Without it, the shortest route is {hops_wo} links.</b> {fig_nodes} of {nodes} tags; size = games; line width = NPMI.</figcaption></figure>
 <p class="rule"><i>Expected</i> = games with both tags if picked independently (A's games × B's games ÷ {pop}); <i>crowding</i> =
 games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's median game. <b>Rule:</b> of pairs on ≥{min_pair} games (0.8%, for
@@ -73,17 +73,16 @@ stable medians), keep crowding ≤ 1.5 and ≤20% of combined neighbours shared;
       reviews (permutation test, {perm}); horror games overall {hl}× typical. An association, not cause; reach, not rating ({ppos} positive).</li>
     <li><b>{bridge}</b> is the only tag linking #1's two neighbour groups; if it spreads, the gap closes.</li>
     <li><b>Narrow lead:</b> top at all {cut_n} pruning settings (4 NPMI cutoffs × 2 minimums) but in {top1} of
-      100 resamples; 2025 games: crowding {hsat}, {hlift}× positive reviews.</li>
+      100 game resamples; 2025 games: crowding {hsat}, {hlift}× positive reviews.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch the game.</li>
-    <li>Weeks 1–6: prototype; playtest target {cpos} positive.</li>
+    <li>Week 0: pitch it at greenlight.</li>
+    <li>Weeks 1–6: prototype; playtests above {ppos} positive.</li>
     <li>Week 7: Coming Soon page with both tags.</li>
     <li>Quarterly: re-check crowding.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>If #1's crowding passes 1.5 or {bridge}'s share of releases rises, I switch to #2 ({h2sat} in 2025), then #3;
-    if playtests miss {cpos}, to #3 ({p3pos} positive).</p>
+    <p>If #1's crowding passes 1.5 or {bridge} passes 4% of releases, I switch to #2 (crowding {h2sat} in 2025), then #3.</p>
   </section>
 </div>
 </body></html>
