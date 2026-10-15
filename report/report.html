@@ -6,6 +6,7 @@
   <h1>Which Steam tag pair should an indie studio build next? Horror × Multiplayer</h1>
   <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="https://github.com/hhej/steam-tag-whitespace">github.com/hhej/steam-tag-whitespace</a></div>
 </header>
+<p class="intro">Steam is the largest PC game store. Players vote tags onto each game; the top tags drive store search.</p>
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
@@ -30,12 +31,12 @@
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
     <tr><td>Node</td><td>A tag.</td></tr>
-    <tr><td>Edge</td><td>Co-occurrence: both tags in a game's top 5 by votes. Suggests relatedness, not a stated relation.</td></tr>
+    <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
     <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
     <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, 9 of the top-10 edges involve the 5 most common tags;
       with NPMI, 0.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, 200 games carry the pair, mostly as minor tags; lift 3.1× → 2.5×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie” (the seed); tags on &gt;25% of games (Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration); release-model and adult tags.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, 200 games carry the pair, mostly as minor tags, and lift falls from 3.1× to 2.5×.</td></tr>
+    <tr><td>Excluded</td><td>“Indie” (seed); release-model and adult tags; tags on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
     <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45);
       pairs scored if ≥0.8% (73).</td></tr>
     <tr><td>Size</td><td>439 tags → 81 nodes, 177 edges.</td></tr>
