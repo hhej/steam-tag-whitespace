@@ -16,7 +16,7 @@
     network yet do well when combined; that needs each tag's neighbours.</p></section>
 </div>
 
-<div class="row">
+<div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
     <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
@@ -30,12 +30,13 @@
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
     <tr><td>Node</td><td>A tag.</td></tr>
-    <tr><td>Edge</td><td>Both tags are in the same game's top 5 tags by votes.</td></tr>
-    <tr><td>Weight</td><td>NPMI. With raw counts, 9 of the top-10 edges involve the 5 most common tags;
+    <tr><td>Edge</td><td>Co-occurrence: both tags in a game's top 5 by votes. Suggests relatedness, not a stated relation.</td></tr>
+    <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
+    <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, 9 of the top-10 edges involve the 5 most common tags;
       with NPMI, 0.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20 tags, 200 games carry the pair, mostly as minor tags; lift 3.1× → 2.5×.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, 200 games carry the pair, mostly as minor tags; lift 3.1× → 2.5×.</td></tr>
     <tr><td>Excluded</td><td>“Indie” (the seed); tags on &gt;25% of games (Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration); release-model and adult tags.</td></tr>
-    <tr><td>Pruning</td><td>Tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45);
+    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games (136); edge NPMI ≥ 0.10 and ≥0.5% shared (45);
       pairs scored if ≥0.8% (73).</td></tr>
     <tr><td>Size</td><td>439 tags → 81 nodes, 177 edges.</td></tr>
   </table></section>
@@ -45,28 +46,27 @@
 <figure><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
 <figcaption>16 of 81 tags. Orange = recommended, purple = plan B, dashed = no edge. Size = games; width = NPMI.</figcaption></figure>
 <table class="pairs">
-  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Overlap</th><th>Median reviews</th>
-    <th>Lift</th><th>Top 10%</th></tr>
+  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Shared neighbours</th><th>Median reviews</th>
+    <th>Lift (÷40)</th><th>Top 10%</th></tr>
   <tr class="pick"><td>Horror × Multiplayer</td><td>75 (55)</td><td>1.4×</td><td>0.08</td><td>124</td><td>3.1×</td><td>24%</td></tr><tr class="planb"><td>Pixel Graphics × RPG</td><td>133 (106)</td><td>1.3×</td><td>0.00</td><td>70</td><td>1.8×</td><td>13%</td></tr><tr class=""><td>Management × Simulation</td><td>121 (32)</td><td>3.8×</td><td>0.08</td><td>127</td><td>3.2×</td><td>23%</td></tr>
 </table>
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>Horror × Multiplayer</b> has no edge; the two tags share 8% of neighbours, linked only via Online Co-Op.
+    <li><b>Horror × Multiplayer</b> has no edge; the two tags share 8% of their neighbours, linked only via Online Co-Op.
       Yet its median game gets 3.1× the cohort's 40 reviews (p &lt; 0.001).</li>
     <li>9 of the 10 highest-lift pairs are crowded, e.g. Management × Simulation (3.8× chance).</li>
-    <li>#1 at all 8 NPMI cutoffs. Lift &gt; 1 in 100/100 bootstraps (90% CI 1.9–7.8×) and on S2
-      (6 games, 1.6×). #1 in 36/100; in 42 it dips under the 73-game floor.</li>
+    <li>#1 at all 8 NPMI cutoffs. Lift &gt; 1 in 100/100 bootstraps (90% CI 1.9–7.8×) and on
+      S2 (1.6×). #1 in 36/100; in 42 it dips under the 73-game floor.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch Horror × Multiplayer at greenlight; plan B Pixel Graphics × RPG.</li>
-    <li>Weeks 1–6: prototype. Week 7: Steam Coming Soon page, Horror and Multiplayer as first tags.</li>
-    <li>Before full production: re-run on 2025 releases; switch to plan B if the pair is over 1.5×
-      crowded or out of the top 3.</li>
+    <li>Week 0: pitch Horror × Multiplayer at greenlight; plan B is Pixel Graphics × RPG.</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page with Horror, Multiplayer as first tags.</li>
+    <li>Before full production: re-run on 2025 releases; plan B if over 1.5× crowded or out of the top 3.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
     <p>The pair is 1.37× as common as chance, near the 1.5× limit (crossed in 17/100 resamples). If 2025
-    releases push it past 1.5×, I switch to Pixel Graphics × RPG.</p>
+    releases push it past 1.5×, I switch to plan B.</p>
   </section>
 </div>
 </body></html>

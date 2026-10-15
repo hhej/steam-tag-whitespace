@@ -16,7 +16,7 @@
     network yet do well when combined; that needs each tag's neighbours.</p></section>
 </div>
 
-<div class="row">
+<div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
     <tr><td>Source</td><td>S1 FronkonGames dataset (Hugging Face). S2 live Steam store + review API.</td></tr>
@@ -30,12 +30,13 @@
   <section><h2><span class="n">4</span>Graph construction</h2>
   <table>
     <tr><td>Node</td><td>A tag.</td></tr>
-    <tr><td>Edge</td><td>Both tags are in the same game's top 5 tags by votes.</td></tr>
-    <tr><td>Weight</td><td>NPMI. With raw counts, {raw_touch} of the top-10 edges involve the 5 most common tags;
+    <tr><td>Edge</td><td>Co-occurrence: both tags in a game's top 5 by votes. Suggests relatedness, not a stated relation.</td></tr>
+    <tr><td>Resolution</td><td>None needed: Steam tags are a fixed list, already resolved by the platform.</td></tr>
+    <tr><td>Weight</td><td>NPMI (0 = what chance predicts). With raw counts, {raw_touch} of the top-10 edges involve the 5 most common tags;
       with NPMI, {npmi_touch}.</td></tr>
-    <tr><td>Window</td><td>Top 5, as on the store page. With all 20 tags, {k20_n} games carry the pair, mostly as minor tags; lift {lift}× → {k20_lift}×.</td></tr>
+    <tr><td>Window</td><td>Top 5, as on the store page. With all 20, {k20_n} games carry the pair, mostly as minor tags; lift {lift}× → {k20_lift}×.</td></tr>
     <tr><td>Excluded</td><td>“Indie” (the seed); tags on &gt;25% of games ({generic}); release-model and adult tags.</td></tr>
-    <tr><td>Pruning</td><td>Tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co});
+    <tr><td>Pruning</td><td>Flat cutoffs: tag on ≥1.5% of games ({min_tag}); edge NPMI ≥ 0.10 and ≥0.5% shared ({min_co});
       pairs scored if ≥0.8% ({min_pair}).</td></tr>
     <tr><td>Size</td><td>{tags_before} tags → {nodes} nodes, {edges} edges.</td></tr>
   </table></section>
@@ -45,28 +46,27 @@
 <figure><img src="../outputs/fig_network.png" alt="Steam tag co-occurrence network">
 <figcaption>{fig_nodes} of {nodes} tags. Orange = recommended, purple = plan B, dashed = no edge. Size = games; width = NPMI.</figcaption></figure>
 <table class="pairs">
-  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Overlap</th><th>Median reviews</th>
-    <th>Lift</th><th>Top 10%</th></tr>
+  <tr><th>Pair</th><th>Games (exp.)</th><th>Over-supply</th><th>Shared neighbours</th><th>Median reviews</th>
+    <th>Lift (÷{cmed})</th><th>Top 10%</th></tr>
   {rows}
 </table>
 
 <div class="row">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>{A} × {B}</b> has no edge; the two tags share {ov} of neighbours, linked only via Online Co-Op.
+    <li><b>{A} × {B}</b> has no edge; the two tags share {ov} of their neighbours, linked only via Online Co-Op.
       Yet its median game gets {lift}× the cohort's {cmed} reviews ({perm}).</li>
     <li>{top10_crowded} of the 10 highest-lift pairs are crowded, e.g. {CA} × {CB} ({csat}× chance).</li>
-    <li>#1 at all {cut_n} NPMI cutoffs. Lift &gt; 1 in {boot_gt1}/100 bootstraps (90% CI {lo}–{hi}×) and on S2
-      ({s2n} games, {s2lift}×). #1 in {top1}/100; in {floor} it dips under the {min_pair}-game floor.</li>
+    <li>#1 at all {cut_n} NPMI cutoffs. Lift &gt; 1 in {boot_gt1}/100 bootstraps (90% CI {lo}–{hi}×) and on
+      S2 ({s2lift}×). #1 in {top1}/100; in {floor} it dips under the {min_pair}-game floor.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
-    <li>Week 0: pitch {A} × {B} at greenlight; plan B {PA} × {PB}.</li>
-    <li>Weeks 1–6: prototype. Week 7: Steam Coming Soon page, {A} and {B} as first tags.</li>
-    <li>Before full production: re-run on 2025 releases; switch to plan B if the pair is over 1.5×
-      crowded or out of the top 3.</li>
+    <li>Week 0: pitch {A} × {B} at greenlight; plan B is {PA} × {PB}.</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page with {A}, {B} as first tags.</li>
+    <li>Before full production: re-run on 2025 releases; plan B if over 1.5× crowded or out of the top 3.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
     <p>The pair is {sat}× as common as chance, near the 1.5× limit (crossed in {over}/100 resamples). If 2025
-    releases push it past 1.5×, I switch to {PA} × {PB}.</p>
+    releases push it past 1.5×, I switch to plan B.</p>
   </section>
 </div>
 </body></html>

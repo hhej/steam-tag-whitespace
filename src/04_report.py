@@ -60,7 +60,7 @@ V["title"] = TITLE.format(**V)
 html = (ROOT / "report/template.html").read_text().format_map(V)
 (ROOT / "report/report.html").write_text(html)
 
-pdf = ROOT / "report/report.pdf"
+pdf = ROOT / "report/6810424009-PanjapolAmpornratana-MADT7202-MidTerm.pdf"
 subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", "--allow-file-access-from-files",
                 f"--print-to-pdf={pdf}", (ROOT / "report/report.html").as_uri()], check=True, capture_output=True)
 pages = len(PdfReader(pdf).pages)

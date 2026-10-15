@@ -6,7 +6,7 @@
 (S1), weight edges by NPMI, then score every tag pair on three tests: its tags sit in separate network
 neighbourhoods, it is not over-supplied (≤1.5× the games chance predicts), and it out-performs the cohort on reviews.
 A live scrape of a random 1,000 of those games (S2) checks that S1 is accurate. Result: **Horror × Multiplayer**,
-plan B Pixel Graphics × RPG. The one-page report is [`report/report.pdf`](report/report.pdf).
+plan B Pixel Graphics × RPG. The one-page report is [`report/6810424009-PanjapolAmpornratana-MADT7202-MidTerm.pdf`](report/6810424009-PanjapolAmpornratana-MADT7202-MidTerm.pdf).
 
 ## Data and permission
 | Source | How obtained | Legal basis |
