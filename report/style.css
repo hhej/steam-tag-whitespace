@@ -1,4 +1,4 @@
-@page { size: A4; margin: 15mm; }
+@page { size: A4; margin: 16mm; }
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.15;
