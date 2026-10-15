@@ -13,7 +13,7 @@ from pypdf import PdfReader
 ROOT = Path(__file__).resolve().parents[1]
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 REPO = "https://github.com/hhej/steam-tag-whitespace"
-TITLE = "{A} × {B}: the white space in Steam's indie tag network"
+TITLE = "Which Steam tag pair should an indie studio build next? {A} × {B}"
 
 N = json.loads((ROOT / "outputs/numbers.json").read_text())
 A, B = N["best"]
@@ -33,11 +33,11 @@ V = dict(
     generic=", ".join(N["generic"]), raw_touch=N["raw_top10_touch_common"], npmi_touch=N["npmi_top10_touch_common"],
     raw_edge="–".join(N["raw_top_edge"]), raw_edge_n=N["raw_top_edge_count"], k20_n=N["k20_n"], k20_lift=f"{N['k20_lift']:.1f}",
     tags_before=N["tags_before"], nodes=N["nodes"], edges=N["edges"], fig_nodes=N["fig_nodes"],
-    broker=N["top_broker"], bc=f"{N['top_broker_bc']:.2f}", con=f"{N['top_broker_constraint']:.2f}",
+    broker=N["top_broker"], bc=f"{N['top_broker_bc']:.2f}",
     broker_deg=N["top_broker_degree"],
     n_ab=N["best_n"], exp=f"{N['best_expected']:.0f}", ov=f"{N['best_overlap']:.2f}", med=f"{N['best_median']:.0f}",
     lift=f"{N['best_lift']:.1f}", cmed=f"{N['median_reviews']:.0f}", perm=f"{N['perm_p']:.3f}",
-    hit=f"{100 * N['best_hit']:.0f}%", flift=f"{N['fallback_lift']:.1f}", fsat=f"{N['fallback_sat']:.1f}",
+    flift=f"{N['fallback_lift']:.1f}", fsat=f"{N['fallback_sat']:.1f}",
     cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.0f}", top1=N["boot_top1"],
 )

@@ -1,10 +1,9 @@
 # Steam Tag White-Space Network — MADT 7202 Mid-Term
 
-**Question:** which two-tag game concept should the creative director of a (hypothetical) 5-person Bangkok indie
-studio pitch at the next greenlight meeting?
+**Question:** which two-tag game concept should the creative director of an indie studio build next?
 
 **Approach:** build a tag co-occurrence network from 1,000 randomly sampled Indie games released 2023–2024, weight edges
-by NPMI, then look for *white space*: tag pairs that sit in disjoint network neighbourhoods, are combined no more often
+by NPMI, then look for under-used tag pairs: pairs whose tags sit in separate network neighbourhoods, are combined no more often
 than chance, yet out-perform the cohort on reviews. The one-page report is [`report/report.pdf`](report/report.pdf).
 
 ## Data and permission

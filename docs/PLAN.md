@@ -84,3 +84,16 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
 - **Bootstrap lift computed directly** from the pair's games in each resample (otherwise resamples where n_AB < 8
   were silently counted as failures).
 - **Bridge test = neighbourhood overlap ≤ 0.2** (the "≥2 hops without the direct edge" wording was trivially true).
+
+## Revision after first read-through (2026-10-15)
+- **Figure redrawn:**
+  - Shows 16 tags with grey nodes; the recommended pair is orange.
+  - No colour scale.
+  - Labels are placed only where they touch no other label, node or edge. The layout is rotated until that holds, and the notebook asserts it.
+  - The call-out sits next to the dashed line.
+  - adjustText was removed.
+- **Page text rewritten in plain language.** The invented studio details, real calendar dates and the wishlist threshold were removed. The actions are now three steps with no dates.
+- **Data and construction tables follow the assignment's row list:**
+  - Data: source, how obtained, legal basis, period, volume.
+  - Construction: node, edge, weight, pruning, size.
+- **Puzzle's betweenness is shown in the figure label**, so the findings' numbers are on the page.

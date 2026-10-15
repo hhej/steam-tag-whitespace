@@ -204,19 +204,18 @@ NUM.update(best=list(best), runner=list(runner),
 NUM
 
 # %% [markdown]
-# ## 8 · The figure: backbone of the most-used tags, recommended pair highlighted
+# ## 8 · The figure: the 16 most-used tags plus the recommended pair.
+# Labels are placed only where they touch no other label, node or edge; the cell fails if that is impossible.
 
 # %%
-from matplotlib.colors import LinearSegmentedColormap, LogNorm
 import matplotlib.patheffects as pe
 
-INK, MUTED, EDGE, ACCENT = "#0b0b0b", "#52514e", "#c9c8c2", "#eb6834"
-BLUES = LinearSegmentedColormap.from_list("seq", ["#86b6ef", "#3987e5", "#1c5cab", "#0d366b"])
+INK, EDGE, NODE, ACCENT = "#0b0b0b", "#d3d2cc", "#9a9993", "#eb6834"
+HALO = [pe.withStroke(linewidth=2.2, foreground="white")]
 
-baskets = R["baskets"]
-tag_med = {t: float(np.median([reviews[i] for i, b in enumerate(baskets) if t in b])) for t in G}
-focus = set(best) | {brokers.index[0]}
-show = set(sorted(G, key=lambda t: -G.nodes[t]["n"])[:20]) | focus
+broker = brokers.index[0]
+focus = set(best) | {broker}
+show = set(sorted(G, key=lambda t: (-G.nodes[t]["n"], t))[:16]) | focus
 H = G.subgraph(show).copy()
 H = H.subgraph(max(nx.connected_components(H), key=len) | focus).copy()
 # rebuild in sorted order: subgraph views iterate a Python set, which would make the layout hash-seed dependent
@@ -224,46 +223,118 @@ H2 = nx.Graph()
 H2.add_nodes_from((t, G.nodes[t]) for t in sorted(H))
 H2.add_edges_from(sorted((*sorted((u, v)), d) for u, v, d in H.edges(data=True)))
 H = H2
-pos = nx.kamada_kawai_layout(H, weight="dist")
+kk = nx.kamada_kawai_layout(H, weight="dist")
+sizes = {t: 25 + 1.6 * H.nodes[t]["n"] for t in H}
+label = {t: t for t in H}
+label[broker] = f"{broker} (betweenness {brokers.iloc[0]['betweenness']:.2f})"
+msg = f"{best[0]} × {best[1]}: no edge\n{int(b.n_ab)} games (exp. {b.expected:.0f}) · {b.lift:.1f}× median reviews"
 
-fig, ax = plt.subplots(figsize=(7.6, 2.45), dpi=300)
-norm = LogNorm(vmin=min(tag_med[t] for t in H), vmax=max(tag_med[t] for t in H))
-widths = [0.4 + 3.2 * d["npmi"] for _, _, d in H.edges(data=True)]
-nx.draw_networkx_edges(H, pos, ax=ax, width=widths, edge_color=EDGE)
-sizes = [20 + 2.0 * H.nodes[t]["n"] for t in H]
-nx.draw_networkx_nodes(H, pos, ax=ax, node_size=sizes, node_color=[tag_med[t] for t in H], cmap=BLUES,
-                       vmin=norm.vmin, vmax=norm.vmax, linewidths=[2.4 if t in best else 0.8 for t in H],
-                       edgecolors=[ACCENT if t in best else "#fcfcfb" for t in H])
-# recommended pair: dashed bridge across the structural hole
-(x1, y1), (x2, y2) = pos[best[0]], pos[best[1]]
-ax.plot([x1, x2], [y1, y2], ls=(0, (4, 3)), color=ACCENT, lw=2.0, zorder=3)
-texts = [ax.text(x, y, t, fontsize=7.4, color=INK, ha="center", va="center",
-                 fontweight="bold" if t in focus else "normal",
-                 path_effects=[pe.withStroke(linewidth=2.5, foreground="white")]) for t, (x, y) in pos.items()]
-from adjustText import adjust_text
-xy = np.array(list(pos.values()))
-adjust_text(texts, x=xy[:, 0], y=xy[:, 1], ax=ax, expand=(1.15, 1.4), force_static=(0.4, 0.6), iter_lim=400,  # fixed iterations, not wall-clock
-            arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.4))
-# put the call-out in the emptiest corner of the plot
-xs, ys = xy[:, 0], xy[:, 1]
-fx = (xs - xs.min()) / (xs.max() - xs.min()); fy = (ys - ys.min()) / (ys.max() - ys.min())
-corners = [(0.01, 0.99, "left", "top"), (0.99, 0.99, "right", "top"), (0.01, 0.01, "left", "bottom"),
-           (0.99, 0.01, "right", "bottom")]
-corner = min(corners, key=lambda c: (((fx - c[0]) / 0.35) ** 2 + ((fy - c[1]) / 0.5) ** 2 < 1).sum())
-ax.annotate(f"White space: {best[0]} × {best[1]}{'' if G.has_edge(*best) else ' (dashed = no edge)'}\n{int(b.n_ab)} games (exp. {b.expected:.0f}) · "
-            f"{b.lift:.1f}× cohort median reviews",
-            ((x1 + x2) / 2, (y1 + y2) / 2), xytext=corner[:2], textcoords="axes fraction", ha=corner[2],
-            va=corner[3], fontsize=7.6, color=ACCENT, fontweight="bold",
-            arrowprops=dict(arrowstyle="-|>", color=ACCENT, lw=0.9, shrinkA=2, shrinkB=2))
-sm = plt.cm.ScalarMappable(norm=norm, cmap=BLUES)
-cb = fig.colorbar(sm, ax=ax, fraction=0.022, pad=0.0)
-ticks = [t for t in [10, 20, 30, 50, 100, 200, 500] if norm.vmin <= t <= norm.vmax]
-cb.set_ticks(ticks, labels=[str(t) for t in ticks])
-cb.ax.minorticks_off()
-cb.set_label("median reviews (games with tag)", fontsize=6.5, color=MUTED)
-cb.ax.tick_params(labelsize=6, colors=MUTED)
-ax.axis("off")
-fig.tight_layout()
+
+def hit(a, c, pad=2):
+    return not (a[2] + pad < c[0] or c[2] + pad < a[0] or a[3] + pad < c[1] or c[3] + pad < a[1])
+
+
+def inside_pts(pts, box):
+    return ((pts[:, 0] > box[0] + 1) & (pts[:, 0] < box[2] - 1) & (pts[:, 1] > box[1] + 1) & (pts[:, 1] < box[3] - 1)).any()
+
+
+def draw(angle, flip):
+    """Draw the graph with the layout rotated/flipped; place labels where they touch no label, node or edge.
+    Returns the figure and the number of labels that could only be placed on top of an edge."""
+    th = np.radians(angle)
+    rot = np.array([[np.cos(th), -np.sin(th)], [np.sin(th), np.cos(th)]])
+    xy = np.array([kk[t] for t in H]) @ rot.T * [flip, 1]
+    xy = (xy - xy.min(0)) / (xy.max(0) - xy.min(0))  # stretch to the figure's aspect ratio
+    pos = {t: (x * 2.4, y) for t, (x, y) in zip(H, xy)}
+
+    fig, ax = plt.subplots(figsize=(7.6, 2.9), dpi=300)
+    ax.set_xlim(-0.3, 2.7); ax.set_ylim(-0.1, 1.1); ax.axis("off")
+    nx.draw_networkx_edges(H, pos, ax=ax, width=[0.5 + 3.0 * d["npmi"] for _, _, d in H.edges(data=True)],
+                           edge_color=EDGE)
+    nx.draw_networkx_nodes(H, pos, ax=ax, nodelist=list(H), node_size=[sizes[t] for t in H],
+                           node_color=[ACCENT if t in best else NODE for t in H], linewidths=0.8, edgecolors="white")
+    (x1, y1), (x2, y2) = pos[best[0]], pos[best[1]]
+    ax.plot([x1, x2], [y1, y2], ls=(0, (4, 3)), color=ACCENT, lw=1.8, zorder=0.5)
+
+    fig.canvas.draw()
+    rend = fig.canvas.get_renderer()
+    frame = ax.get_window_extent(rend)
+    px = ax.transData.transform
+    nodes = {}
+    for t in H:
+        r = np.sqrt(sizes[t]) / 2 * fig.dpi / 72
+        cx, cy = px(pos[t])
+        nodes[t] = (cx - r, cy - r, cx + r, cy + r)
+    segs = [(pos[u], pos[v]) for u, v in H.edges()] + [(pos[best[0]], pos[best[1]])]
+    edge_px = np.vstack([px(np.linspace(p, q, 40)) for p, q in segs])
+    placed = {}
+
+    def free(box, own=None, edges=True):
+        return (box[0] >= frame.x0 and box[2] <= frame.x1 and box[1] >= frame.y0 and box[3] <= frame.y1
+                and not any(hit(box, o) for o in placed.values())
+                and not any(hit(box, nb, 0) for u, nb in nodes.items() if u != own)
+                and not (edges and inside_pts(edge_px, box)))
+
+    on_edge = 0
+    for t in sorted(H, key=lambda t: (t not in focus, -H.nodes[t]["n"], t)):
+        r = np.sqrt(sizes[t]) / 2 + 2  # points
+        cands = [(r, 0, "left", "center"), (-r, 0, "right", "center"), (0, r, "center", "bottom"),
+                 (0, -r, "center", "top"), (r * .7, r * .7, "left", "bottom"), (-r * .7, r * .7, "right", "bottom"),
+                 (r * .7, -r * .7, "left", "top"), (-r * .7, -r * .7, "right", "top")]
+        done = False
+        for edges in (True, False):  # prefer a spot clear of edges; never accept one on a label or node
+            for dx, dy, ha, va in cands:
+                txt = ax.annotate(label[t], pos[t], xytext=(dx, dy), textcoords="offset points", ha=ha, va=va,
+                                  fontsize=8.0, color=INK, fontweight="bold" if t in focus else "normal",
+                                  path_effects=HALO)
+                e = txt.get_window_extent(rend)
+                if free((e.x0, e.y0, e.x1, e.y1), own=t, edges=edges):
+                    placed[t] = (e.x0, e.y0, e.x1, e.y1)
+                    done = True
+                    on_edge += not edges
+                    break
+                txt.remove()
+            if done:
+                break
+        if not done:
+            return fig, 99
+
+    # call-out: nearest spot to the dashed line clear of labels, nodes and edges; leader must not cross labels
+    mx, my = (x1 + x2) / 2, (y1 + y2) / 2
+    for d in [8, 20, 35, 50, 70, 90, 120, 150]:
+        for ang in range(0, 360, 30):
+            dx, dy = d * np.cos(np.radians(ang)), d * np.sin(np.radians(ang))
+            note = ax.annotate(msg, (mx, my), xytext=(dx, dy), textcoords="offset points",
+                               ha="left" if dx > 1 else "right" if dx < -1 else "center",
+                               va="bottom" if dy > 1 else "top" if dy < -1 else "center",
+                               fontsize=7.8, color=ACCENT, fontweight="bold", path_effects=HALO,
+                               arrowprops=dict(arrowstyle="-", color=ACCENT, lw=0.6, shrinkA=1, shrinkB=0))
+            note.update_positions(rend)
+            e = plt.Text.get_window_extent(note, rend)  # text only: Annotation's extent includes the leader line
+            tb = (e.x0, e.y0, e.x1, e.y1)
+            lead = px(np.linspace((mx, my), ax.transData.inverted().transform(((e.x0 + e.x1) / 2, (e.y0 + e.y1) / 2)), 60))
+            lead = lead[~((lead[:, 0] > tb[0]) & (lead[:, 0] < tb[2]) & (lead[:, 1] > tb[1]) & (lead[:, 1] < tb[3]))]
+            crosses = any(inside_pts(lead, o) for o in list(placed.values()) +
+                          [nb for u, nb in nodes.items() if u not in best])
+            if not crosses and free(tb):
+                return fig, on_edge
+            note.remove()
+    return fig, 99
+
+
+# try 12 rotations x 2 reflections of the same layout; keep the first with no label on an edge
+chosen = None
+for flip in (1, -1):
+    for angle in range(0, 180, 15):
+        fig, bad = draw(angle, flip)
+        if bad == 0:
+            chosen = (angle, flip)
+            break
+        plt.close(fig)
+    if chosen:
+        break
+assert chosen, "no rotation of the layout gives clear labels"
+print("layout rotation, flip:", chosen)
 fig.savefig(OUT / "fig_network.png", dpi=300, bbox_inches="tight", facecolor="white")
 fig.savefig(OUT / "fig_network.svg", bbox_inches="tight", facecolor="white")
 NUM.update(fig_nodes=H.number_of_nodes(), fig_edges=H.number_of_edges())

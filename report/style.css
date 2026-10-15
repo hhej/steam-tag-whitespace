@@ -22,3 +22,4 @@ li { margin-bottom: 0.4mm; }
 b.hl { color: #c4501f; }
 .muted { color: #52514e; }
 .sub a { white-space: nowrap; }
+figcaption { font-size: 10pt; color: #52514e; text-align: left; margin-top: 0.4mm; }

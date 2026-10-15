@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "MADT7202 mid-term: Steam tag white-space network for an indie studio's next game concept"
 requires-python = ">=3.12"
 dependencies = [
-    "adjusttext>=1.4.0",
     "ipykernel>=7.4.0",
     "matplotlib>=3.11.2",
     "nbconvert>=7.17.2",
