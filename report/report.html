@@ -11,7 +11,7 @@
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
     <p>An indie studio's creative director picks the next game's two lead tags; if no pair passed the selection
-    rule, they would pick a crowded one (table, last row).</p></section>
+    rule, they would pick a crowded pair (table).</p></section>
   <section><h2><span class="n">2</span>Why a network</h2>
     <p>Counts show how common a pair is and how well it sells, not whether its tags belong to separate groups or
     which tag connects them. That needs the network.</p></section>
@@ -20,11 +20,11 @@
 <div class="row tables">
   <section><h2><span class="n">3</span>Data</h2>
   <table>
-    <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 live Steam store.</td></tr>
+    <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 Steam store.</td></tr>
     <tr><td>Obtained</td><td>S1 downloaded (Sep 2025). S2: 1,000 random S1 games (random seed 7202), scraped 2026-10-14.</td></tr>
-    <tr><td>Legal</td><td>S1 MIT licence. S2: robots.txt allows these pages; one request per 1.5 s; no personal data.</td></tr>
+    <tr><td>Legal</td><td>S1 MIT licence; S2 allowed by robots.txt, 1 request/1.5 s; no personal data.</td></tr>
     <tr><td>Volume</td><td>S1: 9,094 Indie games (2023–24, ≥10 reviews) + 2,076 from Jan–Jun 2025 as a test set. S2: 996.</td></tr>
-    <tr><td>Check</td><td>S1 and S2 agree: 87% overlap in top-5 tags; review counts correlate at 0.98.</td></tr>
+    <tr><td>Check</td><td>S1 and S2 agree: 87% top-5 tag overlap; reviews correlate 0.98.</td></tr>
     <tr><td>Bias</td><td>Favours games that sold; reviews count buyers, not demand; late-2024 games had less time.</td></tr>
   </table></section>
   <section><h2><span class="n">4</span>Graph construction</h2>
@@ -34,8 +34,8 @@
     <tr><td>Resolution</td><td>Co-op, Online/Local Co-Op and Local Multiplayer merged into Multiplayer (84% of Horror × Multiplayer
       games were also tagged co-op).</td></tr>
     <tr><td>Weight</td><td>NPMI (co-occurrence above expected). Raw counts give 9 of the top 10 edges to the 5 most common tags; NPMI gives none.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's advantage falls from 5.1× to 3.0×.</td></tr>
-    <tr><td>Excluded</td><td>“Indie”; Early Access, Free to Play, adult tags; on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store shows; with all 20, #1 falls from 4.3× to 2.7×.</td></tr>
+    <tr><td>Excluded</td><td>“Indie”, Early Access, Free to Play, adult; on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games (136); edge needs NPMI ≥ 0.10 and ≥0.5% of games (45) with both tags.
       439 tags → <b>80 nodes, 177 edges</b>.</td></tr>
   </table></section>
@@ -50,42 +50,44 @@
   <line x1="1312" y1="563" x2="1480" y2="190" stroke="#1a9e8f" stroke-width="7.5" stroke-dasharray="30 22"/>
   <!-- inset: the crowded comparison pair, which sits elsewhere in the network; a solid line = it HAS an edge -->
   <rect x="1462" y="608" width="362" height="142" rx="10" fill="#ffffff" stroke="#c9c8c2" stroke-width="3"/>
-  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">Crowded: 2.54× expected games</text>
-  <text x="1643" y="672" text-anchor="middle" font-size="20" fill="#52514e">has an edge (NPMI 0.19)</text>
+  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">Crowded: 3.80× expected games</text>
+  <text x="1643" y="672" text-anchor="middle" font-size="20" fill="#52514e">has an edge (NPMI 0.31)</text>
   <line x1="1530" y1="690" x2="1756" y2="690" stroke="#9a9993" stroke-width="8"/>
   <circle cx="1530" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
   <circle cx="1756" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
-  <text x="1530" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">Building</text>
+  <text x="1530" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">Management</text>
   <text x="1756" y="736" text-anchor="middle" font-size="23" fill="#0b0b0b">Simulation</text>
 </svg>
-<div class="fig-note third">#3: Pixel Graphics × RPG: no edge<br>133 games (expected 107)<br>1.8× median reviews</div>
-<div class="fig-note pick">#1: First-Person ×<br>Multiplayer: no edge<br>78 games (expected 71) · 5.1× median reviews</div>
-<div class="fig-note planb">#2: Horror × Multiplayer: no edge<br>114 games (expected 93)<br>2.9× median reviews</div>
-<div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">34</span><span class="hi">119</span></div></div>
+<div class="fig-note third">#3: Pixel Graphics × RPG: no edge<br>133 games (expected 107)<br>1.7× positive reviews</div>
+<div class="fig-note pick">#1: First-Person ×<br>Multiplayer: no edge<br>78 games (expected 71) · 4.3× positive reviews</div>
+<div class="fig-note planb">#2: Horror × Multiplayer: no edge<br>114 games (expected 93)<br>2.5× positive reviews</div>
+<div class="fig-key">positive reviews<br><span class="ramp"></span><br><span class="lo">28</span><span class="hi">95</span></div></div>
 <figcaption><b>First-Person and Multiplayer have no direct link; the shortest route between them goes through Survival Horror (2 links). Without it, the shortest route is 5 links.</b> 14 of 80 tags; size = games; line width = NPMI.</figcaption></figure>
-<p class="rule"><i>Expected</i> = games that would carry both tags if developers picked them independently (A's games × B's
-games ÷ 9,094); <i>crowding</i> = games ÷ expected, above 1.5 = overdone; <i>median reviews</i> = the typical game's reviews. <b>Rule:</b> of pairs on ≥73 games, keep crowding ≤ 1.5 and ≤20% shared neighbours; rank by median reviews.</p>
+<p class="rule"><i>Expected</i> = games with both tags if picked independently (A's games × B's games ÷ 9,094); <i>crowding</i> =
+games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's typical game. <b>Rule:</b> of pairs on ≥73 games, keep
+crowding ≤ 1.5 and ≤20% of neighbours shared; rank by positive reviews.</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games</th><th>Expected by chance</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews (typical indie: 40)</th></tr>
-  <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78</td><td>71</td><td>1.10×</td><td>8%</td><td>204 (5.1×)</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114</td><td>93</td><td>1.23×</td><td>8%</td><td>117 (2.9×)</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133</td><td>107</td><td>1.25×</td><td>0%</td><td>70 (1.8×)</td></tr><tr class=""><td><span class="role">Crowded (box):</span> Building × Simulation</td><td>74</td><td>29</td><td>2.54×</td><td>8%</td><td>136 (3.4×)</td></tr>
+  <tr><th>Rank: pair</th><th>Games</th><th>Expected</th><th>Crowding</th><th>Shared neighbours</th><th>Positive reviews</th><th>% positive</th></tr>
+  <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78</td><td>71</td><td>1.10×</td><td>8%</td><td>148 (4.3×)</td><td>76%</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114</td><td>93</td><td>1.23×</td><td>8%</td><td>85 (2.5×)</td><td>73%</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133</td><td>107</td><td>1.25×</td><td>0%</td><td>58 (1.7×)</td><td>88%</td></tr><tr class=""><td><span class="role">Crowded (box):</span> Management × Simulation</td><td>121</td><td>32</td><td>3.80×</td><td>8%</td><td>111 (3.3×)</td><td>79%</td></tr>
+  <tr class="typ"><td>Typical indie game</td><td></td><td></td><td></td><td></td><td>34 (1.0×)</td><td>87%</td></tr>
 </table>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is on 78 games, close to the 71 expected, so it is not overdone. Yet its typical game gets
-      204 reviews, 5.1× the typical indie game (p &lt; 0.001). Not because of horror: horror games get 1.0×.</li>
-    <li><b>Survival Horror is the only tag connecting</b> #1's two groups of neighbours: the one tag to watch.</li>
-    <li><b>Mostly robust:</b> top under all 8 pruning settings but only 59 of 100 random resamples; on unseen
-      2025 games, crowding 1.14, 2.4× typical reviews.</li>
+    <li><b>#1</b> is on 78 games, near the 71 expected, yet gets 4.3× the typical positive reviews (permutation
+      test, p &lt; 0.001). Horror overall gets 1.0×. It wins on reach, not rating: 76% positive.</li>
+    <li><b>Survival Horror</b> is the only tag connecting #1's two groups of neighbours: the early warning.</li>
+    <li><b>Narrow lead:</b> top at all 8 pruning settings, but in only 60 of 100 resamples. On unseen 2025 games,
+      crowding 1.14 and 2.2× (fewer months to collect reviews).</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page with both tags.</li>
-    <li>Every quarter: re-run and apply section 8.</li>
+    <li>Weeks 1–6: prototype; playtests must beat 76% positive.</li>
+    <li>Week 7: Coming Soon page with both tags. Quarterly: re-run.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>First-Person is spreading (27% of 2025 games). If #1's crowding passes 1.5, I switch to #2 while it
-    stays below 1.5 (1.45 in 2025), then to #3.</p>
+    <p>If #1's or Survival Horror's crowding passes 1.5, I switch to #2 (1.45 in 2025), then #3. If playtests stay below
+    76% positive, I switch to #3 (88% positive).</p>
   </section>
 </div>
 </body></html>

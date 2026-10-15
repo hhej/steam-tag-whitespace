@@ -9,8 +9,8 @@ param,rank
 "NPMI>=0.2, co>=1.0%",1.0
 K=3,
 K=5,1.0
-K=10,13.0
-K=20,29.0
+K=10,15.0
+K=20,32.0
 generic>20%,
 generic>25%,1.0
 generic>35%,

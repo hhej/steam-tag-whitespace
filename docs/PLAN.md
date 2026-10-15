@@ -135,3 +135,4 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - Bridge finding: removing Survival Horror moves First-Person and Multiplayer from 2 to 5 steps apart.
   - Plan B is now #3, because #2 is the same bet.
   - The action tags Survival Horror as the third tag.
+- **Ranking rule changed (2026-10-15, user decision):** pairs are now ranked by median *positive* (thumbs-up) reviews = reach × approval. The pick is unchanged (First-Person × Multiplayer, 4.3×), but it is rated only 76% positive vs 87% typical, which is reported as a trade-off. The crowded example is now Management × Simulation. Cold-read fixes also applied: the 73-game floor is justified, the bridge is linked to an action, "narrow lead" replaces the robustness claim, and the 2025 drop is explained.

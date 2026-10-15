@@ -32,7 +32,7 @@ def pct(x):
 def row(r, role, cls="", h=None):
     return (f'<tr class="{cls}"><td><span class="role">{role}:</span> {r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]}</td><td>{r["expected"]:.0f}</td>'
             f'<td>{r["sat"]:.2f}×</td><td>{pct(r["overlap"])}</td>'
-            f'<td>{r["median"]:.0f} ({r["lift"]:.1f}×)</td></tr>')
+            f'<td>{r["median"]:.0f} ({r["lift"]:.1f}×)</td><td>{pct(r["pct_pos"])}</td></tr>')
 
 
 pk, pb, cr = N["pick"], N["planb"], N["crowd"]
@@ -47,7 +47,8 @@ V = dict(
     min_tag=N["min_tag"], min_co=N["min_co"], min_pair=N["min_pair"],
     tags_before=N["tags_before"], nodes=N["nodes"], edges=N["edges"], fig_nodes=N["fig_nodes"],
     n_ab=pk["n"], exp=f"{pk['expected']:.0f}", sat=f"{pk['sat']:.2f}", ov=pct(pk["overlap"]), med=f"{pk['median']:.0f}",
-    lift=f"{pk['lift']:.1f}", cmed=f"{N['median_reviews']:.0f}",
+    lift=f"{pk['lift']:.1f}", cmed=f"{N['median_reviews']:.0f}", ppos=pct(pk["pct_pos"]), cpos=pct(N["median_pct_pos"]),
+    p3pos=pct(N["third_rec"]["pct_pos"]),
     perm="p &lt; 0.001" if N["perm_p"] < 0.001 else f"p = {N['perm_p']:.3f}",
     hit=pct(pk["hit"]), hit_cut=f"{N['hit_cut']:,.0f}", clift=f"{cr['lift']:.1f}", csat=f"{cr['sat']:.2f}",
     top10_crowded=N["top10_lift_crowded"], cut_n=sum(1 for k in sweep if k.startswith("NPMI")),
@@ -55,6 +56,8 @@ V = dict(
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
     rows=row(pk, "#1", "pick", h=N["holdout"]["pick"]) + row(pb, "#2", "planb", h=N["holdout"]["planb"])
          + row(N["third_rec"], "#3", "third", h=N["holdout"]["third"]) + row(cr, "Crowded (box)", h=N["holdout"]["crowd"]),
+    typ_row=(f'<tr class="typ"><td>Typical indie game</td><td></td><td></td><td></td><td></td>'
+             f'<td>{N["median_reviews"]:.0f} (1.0×)</td><td>{pct(N["median_pct_pos"])}</td></tr>'),
     hn=f"{N['holdout_n']:,}", hsat=f"{N['holdout']['pick']['sat']:.2f}", hlift=f"{N['holdout']['pick']['lift']:.1f}",
     h3lift=f"{N['holdout']['third']['lift']:.1f}", fp25=pct(N["holdout_fp_share"]),
     bridge=N["bridge"][0], hops=N["bridge_hops"], hops_wo=N["bridge_hops_without"],

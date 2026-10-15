@@ -17,7 +17,7 @@ td:first-child { font-weight: 600; color: #1f2a6b; white-space: nowrap; width: 1
 tr:last-child td { border-bottom: 0.5px solid #d6d5cf; }
 figure { margin: 1mm 0 0; text-align: center; }
 figure img { width: 100%; display: block; }
-.figwrap { position: relative; width: 68%; margin: 0 auto; }
+.figwrap { position: relative; width: 64%; margin: 0 auto; }
 ul { margin: 0; padding-left: 4.2mm; }
 li { margin-bottom: 0.4mm; }
 b.hl { color: #c4501f; }
@@ -50,4 +50,5 @@ table.pairs td:last-child { white-space: nowrap; }
 .fig-note.third { color: #1a9e8f; right: 0%; top: -4%; text-align: right; }
 table.pairs tr.third td:first-child { border-left-color: #1a9e8f; }
 
-.row.bottom { grid-template-columns: 1.05fr 0.95fr; }
+.row.bottom { grid-template-columns: 1.05fr 0.95fr; }table.pairs tr.typ td { color: #52514e; font-style: italic; }
+table.pairs td:nth-child(6) { white-space: nowrap; }

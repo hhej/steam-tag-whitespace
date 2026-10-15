@@ -4,7 +4,9 @@
   "analysed": 996,
   "fetched_from": "2026-10-14",
   "fetched_to": "2026-10-14",
-  "median_reviews": 40.0,
+  "median_reviews": 34.0,
+  "median_total_reviews": 40.0,
+  "median_pct_pos": 0.8726304643641869,
   "tri_top5_jaccard": 0.8692269076305221,
   "tri_top5_identical": 0.7108433734939759,
   "tri_reviews_spearman": 0.977434272549861,
@@ -43,14 +45,14 @@
     "Adventure"
   ],
   "raw_top_edge_count": 528,
-  "top10_lift_crowded": 8,
+  "top10_lift_crowded": 7,
   "unmerged_hm_n": 75,
   "unmerged_hm_coop": 63,
-  "horror_lift": 1.025,
-  "pick_horror_lift": 3.9,
-  "pick_nonhorror_lift": 11.525,
+  "horror_lift": 0.9705882352941176,
+  "pick_horror_lift": 3.8823529411764706,
+  "pick_nonhorror_lift": 10.764705882352942,
   "pick_nonhorror_n": 25,
-  "pick_lift_wo_top5": 3.35,
+  "pick_lift_wo_top5": 2.8529411764705883,
   "uncrowded_n": 35,
   "overlap_removed": 3,
   "overlap_removed_eg": [
@@ -65,20 +67,20 @@
     "RPG"
   ],
   "k20_n": 375,
-  "k20_lift": 3.025,
+  "k20_lift": 2.676470588235294,
   "k20_sat": 1.1447479725012084,
   "s2_pair_n": 0,
   "s2_pair_lift": NaN,
   "boot_below_floor": 24,
-  "boot_outranked": 17,
-  "boot_planb_top1": 35,
-  "boot_either_top1": 94,
-  "boot_top1": 59,
-  "boot_top3": 74,
+  "boot_outranked": 16,
+  "boot_planb_top1": 27,
+  "boot_either_top1": 87,
+  "boot_top1": 60,
+  "boot_top3": 71,
   "boot_lift_gt1": 100,
   "boot_sat_over": 0,
-  "boot_lift_p05": 2.3246036585365855,
-  "boot_lift_p95": 9.901646341463413,
+  "boot_lift_p05": 1.8561121323529413,
+  "boot_lift_p95": 6.63996212121212,
   "perm_p": 0.0,
   "perm_draws": 10000,
   "holdout_n": 2076,
@@ -88,25 +90,25 @@
       "n": 20,
       "expected": 17.514450867052023,
       "sat": 1.141914191419142,
-      "lift": 2.425
+      "lift": 2.1911764705882355
     },
     "planb": {
       "n": 34,
       "expected": 23.497109826589597,
       "sat": 1.4469864698646986,
-      "lift": 2.7375
+      "lift": 2.3088235294117645
     },
     "third": {
       "n": 33,
       "expected": 26.03757225433526,
       "sat": 1.2673992673992673,
-      "lift": 1.025
+      "lift": 1.1176470588235294
     },
     "crowd": {
-      "n": 23,
-      "expected": 9.335260115606937,
-      "sat": 2.4637770897832816,
-      "lift": 2.475
+      "n": 55,
+      "expected": 12.77456647398844,
+      "sat": 4.3054298642533935,
+      "lift": 1.5
     }
   },
   "bridge": [
@@ -130,10 +132,11 @@
     "n": 78,
     "expected": 70.71970530019793,
     "sat": 1.1029457725947522,
+    "pct_pos": 0.7587802940007946,
     "overlap": 0.07692307692307693,
-    "median": 204.0,
-    "lift": 5.1,
-    "hit": 0.3717948717948718,
+    "median": 147.5,
+    "lift": 4.338235294117647,
+    "hit": 0.3333333333333333,
     "npmi": 0.02059078576271922,
     "edge": false
   },
@@ -145,10 +148,11 @@
     "n": 114,
     "expected": 92.7034308335166,
     "sat": 1.2297279504652776,
+    "pct_pos": 0.727704799911318,
     "overlap": 0.08333333333333333,
-    "median": 117.0,
-    "lift": 2.925,
-    "hit": 0.22807017543859648,
+    "median": 85.0,
+    "lift": 2.5,
+    "hit": 0.19298245614035087,
     "npmi": 0.0472219363079099,
     "edge": false
   },
@@ -160,29 +164,31 @@
     "n": 133,
     "expected": 106.78117440070376,
     "sat": 1.2455379025979643,
+    "pct_pos": 0.8767123287671232,
     "overlap": 0.0,
-    "median": 70.0,
-    "lift": 1.75,
+    "median": 58.0,
+    "lift": 1.7058823529411764,
     "hit": 0.12781954887218044,
     "npmi": 0.05196837756996266,
     "edge": false
   },
   "crowd": {
     "pair": [
-      "Building",
+      "Management",
       "Simulation"
     ],
-    "n": 74,
-    "expected": 29.13569386408621,
-    "sat": 2.5398399758454104,
+    "n": 121,
+    "expected": 31.80998460523422,
+    "sat": 3.8038371128318587,
+    "pct_pos": 0.7899934167215273,
     "overlap": 0.07692307692307693,
-    "median": 136.5,
-    "lift": 3.4125,
-    "hit": 0.28378378378378377,
-    "npmi": 0.19373144488492847,
+    "median": 111.0,
+    "lift": 3.264705882352941,
+    "hit": 0.2066115702479339,
+    "npmi": 0.30929174849873375,
     "edge": true
   },
-  "hit_cut": 726.0,
+  "hit_cut": 595.0,
   "sweep": [
     {
       "param": "NPMI>=0.05, co>=0.5%",
@@ -226,11 +232,11 @@
     },
     {
       "param": "K=10",
-      "rank": 13.0
+      "rank": 15.0
     },
     {
       "param": "K=20",
-      "rank": 29.0
+      "rank": 32.0
     },
     {
       "param": "generic>20%",
@@ -261,6 +267,6 @@
   "scored_pairs": 135,
   "fig_nodes": 14,
   "fig_edges": 18,
-  "colour_lo": 34.0,
-  "colour_hi": 119.0
+  "colour_lo": 28.0,
+  "colour_hi": 95.0
 }

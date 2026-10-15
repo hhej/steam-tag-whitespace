@@ -35,7 +35,8 @@ games = tn.load_games()                        # S2: live pull for the random 1,
 games = games[games["s2_tags"].map(len) > 0].reset_index(drop=True)
 NUM.update(population=len(cohort), sampled=1000, analysed=len(games),
            fetched_from=games["fetched"].min()[:10], fetched_to=games["fetched"].max()[:10],
-           median_reviews=float(cohort["reviews"].median()))
+           median_reviews=float(cohort["positive"].median()), median_total_reviews=float(cohort["reviews"].median()),
+           median_pct_pos=float((cohort["positive"] / cohort["reviews"]).median()))
 print(NUM)
 
 # %% [markdown]
@@ -67,7 +68,9 @@ print({k: round(NUM[k], 3) for k in ["tri_top5_jaccard", "tri_top5_identical", "
 
 # %%
 dicts = list(cohort["tags"])
-reviews = cohort["reviews"].values
+# ranking measure: POSITIVE (thumbs-up) reviews = reach x approval in one count
+reviews = cohort["positive"].values
+pct_pos = (cohort["positive"] / cohort["reviews"]).values
 tag_lists = [list(d) for d in dicts]
 indie_share = np.mean(["Indie" in t for t in tag_lists])
 generic, dfreq = tn.generic_tags(tag_lists, tn.DEFAULTS["generic_df"])
@@ -111,7 +114,7 @@ print("NPMI top-10 edges:", [(a, b, round(d["npmi"], 2)) for a, b, d in npmi_top
 # %% [markdown]
 # ## 4 · Pairs: which combinations perform, and which are already crowded?
 # A pair is eligible if it is not over-supplied (≤ 1.5× the games chance predicts) and its two tags sit in
-# separate neighbourhoods (neighbour overlap ≤ 0.2). Eligible pairs are ranked by lift (median reviews ÷ cohort).
+# separate neighbourhoods (neighbour overlap ≤ 0.2). Eligible pairs are ranked by lift (median positive reviews ÷ cohort).
 
 # %%
 pairs.to_csv(OUT / "tables/pairs.csv", index=False)
@@ -245,7 +248,7 @@ for v in raw.values():
     r = int(v.get("positive", 0)) + int(v.get("negative", 0))
     if (pd.Timestamp("2025-01-01") <= d <= pd.Timestamp("2025-06-30") if not pd.isna(d) else False) \
             and "Indie" in (v.get("genres") or []) and r >= 10 and t:
-        h_rev.append(r); h_tags.append(tn.resolve(dict(sorted(t.items(), key=lambda kv: -kv[1]))))
+        h_rev.append(int(v.get("positive", 0))); h_tags.append(tn.resolve(dict(sorted(t.items(), key=lambda kv: -kv[1]))))
 h_rev = np.array(h_rev)
 h_b = tn.top_k_tags([list(x) for x in h_tags], P["k"], R["generic"])   # the 2023-24 generic list, unchanged
 def holdout(pair):
@@ -272,7 +275,9 @@ print("shared neighbours", shared_nb, "hops", NUM["bridge_hops"], "-> without th
 
 # %%
 def rec(r):
+    g = [i for i, bk in enumerate(R["baskets"]) if {r.a, r.b} <= set(bk)]
     return dict(pair=[r.a, r.b], n=int(r.n_ab), expected=float(r.expected), sat=float(r.saturation),
+                pct_pos=float(np.median(pct_pos[g])),
                 overlap=float(r.overlap), median=float(r.median_reviews), lift=float(r.lift), hit=float(r.hit_rate),
                 npmi=float(r.npmi), edge=bool(G.has_edge(r.a, r.b)))
 
