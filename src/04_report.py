@@ -54,7 +54,7 @@ V = dict(
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
     rows=row(pk, "#1", "pick", h=N["holdout"]["pick"]) + row(pb, "#2", "planb", h=N["holdout"]["planb"])
-         + row(N["third_rec"], "#3", h=N["holdout"]["third"]) + row(cr, "Crowded*", h=N["holdout"]["crowd"]),
+         + row(N["third_rec"], "#3", "third", h=N["holdout"]["third"]) + row(cr, "Crowded*", h=N["holdout"]["crowd"]),
     hn=f"{N['holdout_n']:,}", hsat=f"{N['holdout']['pick']['sat']:.2f}", hlift=f"{N['holdout']['pick']['lift']:.1f}",
     h3lift=f"{N['holdout']['third']['lift']:.1f}", fp25=pct(N["holdout_fp_share"]),
     bridge=N["bridge"][0], hops=N["bridge_hops"], hops_wo=N["bridge_hops_without"],
@@ -67,6 +67,7 @@ V = dict(
     col_lo=f"{N['colour_lo']:.0f}", col_hi=f"{N['colour_hi']:.0f}",
     hl=f"{N['horror_lift']:.1f}", nhl=f"{N['pick_nonhorror_lift']:.1f}",
     h2sat=f"{N['holdout']['planb']['sat']:.2f}",
+    t3n=N["third_rec"]["n"], t3exp=f"{N['third_rec']['expected']:.0f}", t3lift=f"{N['third_rec']['lift']:.1f}",
 )
 assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
 V["title"] = TITLE.format(**V)
