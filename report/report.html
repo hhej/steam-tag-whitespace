@@ -51,7 +51,7 @@
   <line x1="1312" y1="563" x2="1480" y2="190" stroke="#1a9e8f" stroke-width="7.5" stroke-dasharray="30 22"/>
   <!-- inset: the crowded comparison pair, which sits elsewhere in the network; a solid line = it HAS an edge -->
   <rect x="1462" y="608" width="362" height="142" rx="10" fill="#ffffff" stroke="#c9c8c2" stroke-width="3"/>
-  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">*Crowded: 2.54× chance</text>
+  <text x="1643" y="640" text-anchor="middle" font-size="22" fill="#52514e">Crowded pair: 2.54× chance</text>
   <text x="1643" y="672" text-anchor="middle" font-size="20" fill="#52514e">edge, NPMI 0.19</text>
   <line x1="1530" y1="690" x2="1756" y2="690" stroke="#9a9993" stroke-width="8"/>
   <circle cx="1530" cy="690" r="18" fill="#bcd5f2" stroke="#ffffff" stroke-width="3"/>
@@ -63,12 +63,12 @@
 <div class="fig-note pick">#1: First-Person ×<br>Multiplayer, near chance, no edge<br>78 games (exp. 71) · 5.1× reviews</div>
 <div class="fig-note planb">#2: Horror × Multiplayer<br>near chance, no edge<br>114 games (exp. 93) · 2.9× reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">34</span><span class="hi">119</span></div></div>
-<figcaption><b>Survival Horror links #1's tags: 2 steps apart, 5 without it.</b> 14 of 80 tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI. *Inset. 2025 check = crowding · reviews.</figcaption></figure>
+<figcaption><b>Survival Horror links #1's tags: 2 steps apart, 5 without it.</b> 14 of 80 tags: ranked pairs (bold), #1 and #2's top-2 neighbours, linking paths. Size = games, width = NPMI.</figcaption></figure>
 <p class="rule"><b>Selection rule:</b> of pairs on ≥73 games (0.8%), keep those <b>not crowded</b> (games ≤ 1.5× chance;
 chance = games with A × games with B ÷ 9,094) with ≤20% <b>shared neighbours</b>; rank by median reviews ÷ 40.</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th><th>2025 check</th></tr>
-  <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78 (71)</td><td>1.10×</td><td>8%</td><td>204 (5.1×)</td><td>1.14× · 2.4×</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114 (93)</td><td>1.23×</td><td>8%</td><td>117 (2.9×)</td><td>1.45× · 2.7×</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133 (107)</td><td>1.25×</td><td>0%</td><td>70 (1.8×)</td><td>1.27× · 1.0×</td></tr><tr class=""><td><span class="role">Crowded*:</span> Building × Simulation</td><td>74 (29)</td><td>2.54×</td><td>8%</td><td>136 (3.4×)</td><td>2.46× · 2.5×</td></tr>
+  <tr><th>Rank: pair</th><th>Games (chance)</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews</th></tr>
+  <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78 (71)</td><td>1.10×</td><td>8%</td><td>204 (5.1×)</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114 (93)</td><td>1.23×</td><td>8%</td><td>117 (2.9×)</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133 (107)</td><td>1.25×</td><td>0%</td><td>70 (1.8×)</td></tr><tr class=""><td><span class="role">Crowded (box in figure):</span> Building × Simulation</td><td>74 (29)</td><td>2.54×</td><td>8%</td><td>136 (3.4×)</td></tr>
 </table>
 
 <div class="row bottom">
@@ -76,8 +76,8 @@ chance = games with A × games with B ÷ 9,094) with ≤20% <b>shared neighbours
     <li><b>#1</b> is near chance (NPMI 0.02, no edge) yet gets 5.1× the median reviews (p &lt; 0.001,
       permutation test). Not horror: all horror games get 1.0×, #1's non-horror games 11.5×.</li>
     <li><b>Survival Horror is the only link</b> between #1's two neighbourhoods (figure): the one tag to watch.</li>
-    <li><b>Mostly holds:</b> #1 at all 8 edge cutoffs; above the median in 100/100 bootstraps (#1 in 59);
-      3.35× without its top 5 games; passes the 2025 check.</li>
+    <li><b>Mostly holds:</b> #1 at all 8 edge cutoffs and in 59/100 bootstraps; 3.35× without its top 5
+      games; on early-2025 games the analysis never saw, still uncrowded (1.14×) at 2.4× reviews.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>

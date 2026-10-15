@@ -32,7 +32,7 @@ def pct(x):
 def row(r, role, cls="", h=None):
     return (f'<tr class="{cls}"><td><span class="role">{role}:</span> {r["pair"][0]} × {r["pair"][1]}</td><td>{r["n"]} ({r["expected"]:.0f})</td>'
             f'<td>{r["sat"]:.2f}×</td><td>{pct(r["overlap"])}</td>'
-            f'<td>{r["median"]:.0f} ({r["lift"]:.1f}×)</td><td>{h["sat"]:.2f}× · {h["lift"]:.1f}×</td></tr>')
+            f'<td>{r["median"]:.0f} ({r["lift"]:.1f}×)</td></tr>')
 
 
 pk, pb, cr = N["pick"], N["planb"], N["crowd"]
@@ -54,7 +54,7 @@ V = dict(
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
     rows=row(pk, "#1", "pick", h=N["holdout"]["pick"]) + row(pb, "#2", "planb", h=N["holdout"]["planb"])
-         + row(N["third_rec"], "#3", "third", h=N["holdout"]["third"]) + row(cr, "Crowded*", h=N["holdout"]["crowd"]),
+         + row(N["third_rec"], "#3", "third", h=N["holdout"]["third"]) + row(cr, "Crowded (box in figure)", h=N["holdout"]["crowd"]),
     hn=f"{N['holdout_n']:,}", hsat=f"{N['holdout']['pick']['sat']:.2f}", hlift=f"{N['holdout']['pick']['lift']:.1f}",
     h3lift=f"{N['holdout']['third']['lift']:.1f}", fp25=pct(N["holdout_fp_share"]),
     bridge=N["bridge"][0], hops=N["bridge_hops"], hops_wo=N["bridge_hops_without"],
