@@ -6,7 +6,7 @@
   <h1>{title}</h1>
   <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="{repo}">{repo_short}</a></div>
 </header>
-<p class="intro">Steam is the largest PC game store. Players vote tags onto each game; the top tags drive store search.</p>
+<p class="intro">Steam is the largest PC game store. Developers set a game's tags, players vote on them; top tags drive search.</p>
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
@@ -21,7 +21,7 @@
   <section><h2><span class="n">3</span>Data</h2>
   <table>
     <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 Steam store.</td></tr>
-    <tr><td>Obtained</td><td>S1 downloaded (Sep 2025). S2: 1,000 random S1 games (random seed 7202), scraped {fetched}.</td></tr>
+    <tr><td>Obtained</td><td>S1 Sep 2025 snapshot. S2: 1,000 random S1 games (seed 7202), scraped {fetched}: tags, review counts.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence; S2 allowed by robots.txt, 1 request/1.5 s; no personal data.</td></tr>
     <tr><td>Volume</td><td>S1: {pop} Indie games (2023–24, ≥10 reviews) + {hn} from Jan–Jun 2025 as a test set. S2: {an}.</td></tr>
     <tr><td>Check</td><td>S1 and S2 agree: 87% top-5 tag overlap; reviews correlate {rho}.</td></tr>
@@ -34,7 +34,7 @@
     <tr><td>Resolution</td><td>Co-op, Online/Local Co-Op and Local Multiplayer merged into Multiplayer ({coop} of Horror × Multiplayer
       games were also tagged co-op).</td></tr>
     <tr><td>Weight</td><td>NPMI (co-occurrence above expected). Raw counts give {raw_touch} of the top 10 edges to the 5 most common tags; NPMI gives none.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game, as the store shows; with all 20, #1 falls from {lift}× to {k20_lift}×.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store shows; with all 20, #1 falls from {lift}× to {k20_lift}× positive reviews.</td></tr>
     <tr><td>Excluded</td><td>“Indie”, Early Access, Free to Play, adult; on &gt;25% of games: {generic}.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games ({min_tag}); edge needs NPMI ≥ 0.10 and ≥0.5% of games ({min_co}) with both tags.
       {tags_before} tags → <b>{nodes} nodes, {edges} edges</b>.</td></tr>
@@ -64,8 +64,8 @@
 <div class="fig-key">positive reviews<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
 <figcaption><b>First-Person and Multiplayer have no direct link; the shortest route between them goes through {bridge} ({hops} links). Without it, the shortest route is {hops_wo} links.</b> {fig_nodes} of {nodes} tags; size = games; line width = NPMI.</figcaption></figure>
 <p class="rule"><i>Expected</i> = games with both tags if picked independently (A's games × B's games ÷ {pop}); <i>crowding</i> =
-games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's typical game. <b>Rule:</b> of pairs on ≥{min_pair} games, keep
-crowding ≤ 1.5 and ≤20% of neighbours shared; rank by positive reviews.</p>
+games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's median game. <b>Rule:</b> of pairs on ≥{min_pair} games (0.8%, for
+stable medians), keep crowding ≤ 1.5 and ≤20% of combined neighbours shared; rank by positive reviews.</p>
 <table class="pairs">
   <tr><th>Rank: pair</th><th>Games</th><th>Expected</th><th>Crowding</th><th>Shared neighbours</th><th>Positive reviews</th><th>% positive</th></tr>
   {rows}
@@ -74,20 +74,20 @@ crowding ≤ 1.5 and ≤20% of neighbours shared; rank by positive reviews.</p>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is on {n_ab} games, near the {exp} expected, yet gets {lift}× the typical positive reviews (permutation
-      test, {perm}). Horror overall gets {hl}×. It wins on reach, not rating: {ppos} positive.</li>
+    <li><b>#1</b>: {n_ab} games vs {exp} expected (NPMI {npmi}, under the 0.10 edge cutoff), yet {lift}× typical positive
+      reviews (permutation test, {perm}); horror overall {hl}×. An association, not proof of cause; reach, not rating ({ppos} positive).</li>
     <li><b>{bridge}</b> is the only tag connecting #1's two groups of neighbours: the early warning.</li>
-    <li><b>Narrow lead:</b> top at all {cut_n} pruning settings, but in only {top1} of 100 resamples. On unseen 2025 games,
-      crowding {hsat} and {hlift}× (fewer months to collect reviews).</li>
+    <li><b>Narrow lead:</b> top at all {cut_n} pruning settings but in {top1} of 100 resamples; 2025 games: crowding {hsat},
+      {hlift}× (less time to collect reviews).</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>
     <li>Weeks 1–6: prototype; playtests must beat {ppos} positive.</li>
-    <li>Week 7: Coming Soon page with both tags. Quarterly: re-run.</li>
+    <li>Week 7: Coming Soon page with both tags. Quarterly: re-check crowding.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>If #1's or {bridge}'s crowding passes 1.5, I switch to #2 ({h2sat} in 2025), then #3. If playtests stay below
-    {ppos} positive, I switch to #3 ({p3pos} positive).</p>
+    <p>If #1's or {bridge}'s crowding passes 1.5, I switch to #2 ({h2sat} in 2025), then #3; if playtests stay
+    below {ppos} positive, to #3 ({p3pos}).</p>
   </section>
 </div>
 </body></html>

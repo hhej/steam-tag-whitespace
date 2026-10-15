@@ -6,7 +6,7 @@
   <h1>Which tag pair should an indie game use? First-Person × Multiplayer</h1>
   <div class="sub">MADT 7202 Mid-Term · Panjapol Ampornratana 6810424009 · Repo: <a href="https://github.com/hhej/steam-tag-whitespace">github.com/hhej/steam-tag-whitespace</a></div>
 </header>
-<p class="intro">Steam is the largest PC game store. Players vote tags onto each game; the top tags drive store search.</p>
+<p class="intro">Steam is the largest PC game store. Developers set a game's tags, players vote on them; top tags drive search.</p>
 
 <div class="row">
   <section><h2><span class="n">1</span>The decision</h2>
@@ -21,7 +21,7 @@
   <section><h2><span class="n">3</span>Data</h2>
   <table>
     <tr><td>Source</td><td>S1 FronkonGames steam-games-dataset (Hugging Face); S2 Steam store.</td></tr>
-    <tr><td>Obtained</td><td>S1 downloaded (Sep 2025). S2: 1,000 random S1 games (random seed 7202), scraped 2026-10-14.</td></tr>
+    <tr><td>Obtained</td><td>S1 Sep 2025 snapshot. S2: 1,000 random S1 games (seed 7202), scraped 2026-10-14: tags, review counts.</td></tr>
     <tr><td>Legal</td><td>S1 MIT licence; S2 allowed by robots.txt, 1 request/1.5 s; no personal data.</td></tr>
     <tr><td>Volume</td><td>S1: 9,094 Indie games (2023–24, ≥10 reviews) + 2,076 from Jan–Jun 2025 as a test set. S2: 996.</td></tr>
     <tr><td>Check</td><td>S1 and S2 agree: 87% top-5 tag overlap; reviews correlate 0.98.</td></tr>
@@ -34,7 +34,7 @@
     <tr><td>Resolution</td><td>Co-op, Online/Local Co-Op and Local Multiplayer merged into Multiplayer (84% of Horror × Multiplayer
       games were also tagged co-op).</td></tr>
     <tr><td>Weight</td><td>NPMI (co-occurrence above expected). Raw counts give 9 of the top 10 edges to the 5 most common tags; NPMI gives none.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game, as the store shows; with all 20, #1 falls from 4.3× to 2.7×.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store shows; with all 20, #1 falls from 4.3× to 2.7× positive reviews.</td></tr>
     <tr><td>Excluded</td><td>“Indie”, Early Access, Free to Play, adult; on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games (136); edge needs NPMI ≥ 0.10 and ≥0.5% of games (45) with both tags.
       439 tags → <b>80 nodes, 177 edges</b>.</td></tr>
@@ -64,8 +64,8 @@
 <div class="fig-key">positive reviews<br><span class="ramp"></span><br><span class="lo">28</span><span class="hi">95</span></div></div>
 <figcaption><b>First-Person and Multiplayer have no direct link; the shortest route between them goes through Survival Horror (2 links). Without it, the shortest route is 5 links.</b> 14 of 80 tags; size = games; line width = NPMI.</figcaption></figure>
 <p class="rule"><i>Expected</i> = games with both tags if picked independently (A's games × B's games ÷ 9,094); <i>crowding</i> =
-games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's typical game. <b>Rule:</b> of pairs on ≥73 games, keep
-crowding ≤ 1.5 and ≤20% of neighbours shared; rank by positive reviews.</p>
+games ÷ expected; <i>positive reviews</i> = thumbs-up reviews of the pair's median game. <b>Rule:</b> of pairs on ≥73 games (0.8%, for
+stable medians), keep crowding ≤ 1.5 and ≤20% of combined neighbours shared; rank by positive reviews.</p>
 <table class="pairs">
   <tr><th>Rank: pair</th><th>Games</th><th>Expected</th><th>Crowding</th><th>Shared neighbours</th><th>Positive reviews</th><th>% positive</th></tr>
   <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78</td><td>71</td><td>1.10×</td><td>8%</td><td>148 (4.3×)</td><td>76%</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114</td><td>93</td><td>1.23×</td><td>8%</td><td>85 (2.5×)</td><td>73%</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133</td><td>107</td><td>1.25×</td><td>0%</td><td>58 (1.7×)</td><td>88%</td></tr><tr class=""><td><span class="role">Crowded (box):</span> Management × Simulation</td><td>121</td><td>32</td><td>3.80×</td><td>8%</td><td>111 (3.3×)</td><td>79%</td></tr>
@@ -74,20 +74,20 @@ crowding ≤ 1.5 and ≤20% of neighbours shared; rank by positive reviews.</p>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is on 78 games, near the 71 expected, yet gets 4.3× the typical positive reviews (permutation
-      test, p &lt; 0.001). Horror overall gets 1.0×. It wins on reach, not rating: 76% positive.</li>
+    <li><b>#1</b>: 78 games vs 71 expected (NPMI 0.02, under the 0.10 edge cutoff), yet 4.3× typical positive
+      reviews (permutation test, p &lt; 0.001); horror overall 1.0×. An association, not proof of cause; reach, not rating (76% positive).</li>
     <li><b>Survival Horror</b> is the only tag connecting #1's two groups of neighbours: the early warning.</li>
-    <li><b>Narrow lead:</b> top at all 8 pruning settings, but in only 60 of 100 resamples. On unseen 2025 games,
-      crowding 1.14 and 2.2× (fewer months to collect reviews).</li>
+    <li><b>Narrow lead:</b> top at all 8 pruning settings but in 60 of 100 resamples; 2025 games: crowding 1.14,
+      2.2× (less time to collect reviews).</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>
     <li>Weeks 1–6: prototype; playtests must beat 76% positive.</li>
-    <li>Week 7: Coming Soon page with both tags. Quarterly: re-run.</li>
+    <li>Week 7: Coming Soon page with both tags. Quarterly: re-check crowding.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>If #1's or Survival Horror's crowding passes 1.5, I switch to #2 (1.45 in 2025), then #3. If playtests stay below
-    76% positive, I switch to #3 (88% positive).</p>
+    <p>If #1's or Survival Horror's crowding passes 1.5, I switch to #2 (1.45 in 2025), then #3; if playtests stay
+    below 76% positive, to #3 (88%).</p>
   </section>
 </div>
 </body></html>

@@ -49,6 +49,7 @@ table.pairs td:last-child { white-space: nowrap; }
 .fig-overlay { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 .fig-note.third { color: #1a9e8f; right: 0%; top: -4%; text-align: right; }
 table.pairs tr.third td:first-child { border-left-color: #1a9e8f; }
-
-.row.bottom { grid-template-columns: 1.05fr 0.95fr; }table.pairs tr.typ td { color: #52514e; font-style: italic; }
+table.pairs tr.typ td { color: #52514e; font-style: italic; }
 table.pairs td:nth-child(6) { white-space: nowrap; }
+
+.row.bottom { grid-template-columns: 1fr 1fr; }
