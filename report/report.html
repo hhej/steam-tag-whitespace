@@ -33,9 +33,8 @@
     <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
     <tr><td>Resolution</td><td>Co-op, Online/Local Co-Op and Local Multiplayer merged into Multiplayer (84% of Horror × Multiplayer
       games were also tagged co-op).</td></tr>
-    <tr><td>Weight</td><td>NPMI: how much more often two tags meet than chance (0 = chance). Raw counts put 9 of the top
-      10 edges on the 5 most common tags; NPMI puts none.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's review advantage drops from 5.1× to 3.0×.</td></tr>
+    <tr><td>Weight</td><td>NPMI (co-occurrence above expected). Raw counts give 9 of the top 10 edges to the 5 most common tags; NPMI gives none.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's advantage falls from 5.1× to 3.0×.</td></tr>
     <tr><td>Excluded</td><td>“Indie”; Early Access, Free to Play, adult tags; on &gt;25% of games: Singleplayer, Adventure, Action, Casual, 2D, 3D, Atmospheric, Exploration.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games (136); edge needs NPMI ≥ 0.10 and ≥0.5% of games (45) with both tags.
       439 tags → <b>80 nodes, 177 edges</b>.</td></tr>
@@ -64,29 +63,29 @@
 <div class="fig-note planb">#2: Horror × Multiplayer: no edge<br>114 games (expected 93)<br>2.9× median reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">34</span><span class="hi">119</span></div></div>
 <figcaption><b>First-Person and Multiplayer connect only through Survival Horror: 2 steps apart, 5 without it.</b> Shown: 14 of 80 tags. Dashed = pair with no edge; node size = games; line width = NPMI.</figcaption></figure>
-<p class="rule"><b>Selection rule:</b> of pairs on ≥73 games, keep those <b>not crowded</b> (crowding = games ÷ expected ≤ 1.5;
-expected = games with A × games with B ÷ 9,094) whose tags share ≤20% of neighbours; rank by median reviews.</p>
+<p class="rule"><i>Expected</i> = games that would carry both tags if developers picked them independently (A's games × B's
+games ÷ 9,094); <i>crowding</i> = games ÷ expected, above 1.5 = overdone; <i>median reviews</i> = the typical game's reviews. <b>Rule:</b> of pairs on ≥73 games, keep crowding ≤ 1.5 and ≤20% shared neighbours; rank by median reviews.</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games</th><th>Expected by chance</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews (vs 40)</th></tr>
+  <tr><th>Rank: pair</th><th>Games</th><th>Expected by chance</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews (typical indie: 40)</th></tr>
   <tr class="pick"><td><span class="role">#1:</span> First-Person × Multiplayer</td><td>78</td><td>71</td><td>1.10×</td><td>8%</td><td>204 (5.1×)</td></tr><tr class="planb"><td><span class="role">#2:</span> Horror × Multiplayer</td><td>114</td><td>93</td><td>1.23×</td><td>8%</td><td>117 (2.9×)</td></tr><tr class="third"><td><span class="role">#3:</span> Pixel Graphics × RPG</td><td>133</td><td>107</td><td>1.25×</td><td>0%</td><td>70 (1.8×)</td></tr><tr class=""><td><span class="role">Crowded (box):</span> Building × Simulation</td><td>74</td><td>29</td><td>2.54×</td><td>8%</td><td>136 (3.4×)</td></tr>
 </table>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is about as common as chance (NPMI 0.02, so no edge), yet its median game gets 5.1× the
-      reviews (permutation test, p &lt; 0.001). Horror games overall get only 1.0×.</li>
+    <li><b>#1</b> is on 78 games, close to the 71 expected, so it is not overdone. Yet its typical game gets
+      204 reviews, 5.1× the typical indie game (p &lt; 0.001). Not because of horror: horror games get 1.0×.</li>
     <li><b>Survival Horror is the only tag connecting</b> #1's two groups of neighbours: the one tag to watch.</li>
-    <li><b>Mostly robust:</b> top at all 8 pruning settings but in only 59 of 100 bootstrap resamples; on the
-      2025 test set, still not crowded (1.14×) with 2.4× reviews.</li>
+    <li><b>Mostly robust:</b> top under all 8 pruning settings but only 59 of 100 random resamples; on unseen
+      2025 games, crowding 1.14, 2.4× typical reviews.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page tagged First-Person and Multiplayer/Online Co-Op.</li>
-    <li>Every quarter: re-run and check #1 and Survival Horror (section 8).</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page with both tags.</li>
+    <li>Every quarter: re-run and apply section 8.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>First-Person is spreading (27% of 2025 games). If #1 passes 1.5× crowding, I switch to #2 while it stays
-    below 1.5× (1.45× in 2025), then to #3.</p>
+    <p>First-Person is spreading (27% of 2025 games). If #1's crowding passes 1.5, I switch to #2 while it
+    stays below 1.5 (1.45 in 2025), then to #3.</p>
   </section>
 </div>
 </body></html>

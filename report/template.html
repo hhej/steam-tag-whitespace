@@ -33,9 +33,8 @@
     <tr><td>Edge</td><td>Co-occurrence in a game's top 5 tags; suggests relatedness, not a stated relation.</td></tr>
     <tr><td>Resolution</td><td>Co-op, Online/Local Co-Op and Local Multiplayer merged into Multiplayer ({coop} of Horror × Multiplayer
       games were also tagged co-op).</td></tr>
-    <tr><td>Weight</td><td>NPMI: how much more often two tags meet than chance (0 = chance). Raw counts put {raw_touch} of the top
-      10 edges on the 5 most common tags; NPMI puts none.</td></tr>
-    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's review advantage drops from {lift}× to {k20_lift}×.</td></tr>
+    <tr><td>Weight</td><td>NPMI (co-occurrence above expected). Raw counts give {raw_touch} of the top 10 edges to the 5 most common tags; NPMI gives none.</td></tr>
+    <tr><td>Window</td><td>Top 5 tags per game, as the store page shows; with all 20, #1's advantage falls from {lift}× to {k20_lift}×.</td></tr>
     <tr><td>Excluded</td><td>“Indie”; Early Access, Free to Play, adult tags; on &gt;25% of games: {generic}.</td></tr>
     <tr><td>Pruning</td><td>Tag on ≥1.5% of games ({min_tag}); edge needs NPMI ≥ 0.10 and ≥0.5% of games ({min_co}) with both tags.
       {tags_before} tags → <b>{nodes} nodes, {edges} edges</b>.</td></tr>
@@ -64,29 +63,29 @@
 <div class="fig-note planb">#2: {PA} × {PB}: no edge<br>{pbn} games (expected {pbexp})<br>{pblift}× median reviews</div>
 <div class="fig-key">median reviews per tag<br><span class="ramp"></span><br><span class="lo">{col_lo}</span><span class="hi">{col_hi}</span></div></div>
 <figcaption><b>First-Person and Multiplayer connect only through {bridge}: {hops} steps apart, {hops_wo} without it.</b> Shown: {fig_nodes} of {nodes} tags. Dashed = pair with no edge; node size = games; line width = NPMI.</figcaption></figure>
-<p class="rule"><b>Selection rule:</b> of pairs on ≥{min_pair} games, keep those <b>not crowded</b> (crowding = games ÷ expected ≤ 1.5;
-expected = games with A × games with B ÷ {pop}) whose tags share ≤20% of neighbours; rank by median reviews.</p>
+<p class="rule"><i>Expected</i> = games that would carry both tags if developers picked them independently (A's games × B's
+games ÷ {pop}); <i>crowding</i> = games ÷ expected, above 1.5 = overdone; <i>median reviews</i> = the typical game's reviews. <b>Rule:</b> of pairs on ≥{min_pair} games, keep crowding ≤ 1.5 and ≤20% shared neighbours; rank by median reviews.</p>
 <table class="pairs">
-  <tr><th>Rank: pair</th><th>Games</th><th>Expected by chance</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews (vs {cmed})</th></tr>
+  <tr><th>Rank: pair</th><th>Games</th><th>Expected by chance</th><th>Crowding</th><th>Shared neighbours</th><th>Median reviews (typical indie: {cmed})</th></tr>
   {rows}
 </table>
 
 <div class="row bottom">
   <section><h2><span class="n">6</span>Findings</h2><ul>
-    <li><b>#1</b> is about as common as chance (NPMI {npmi}, so no edge), yet its median game gets {lift}× the
-      reviews (permutation test, {perm}). Horror games overall get only {hl}×.</li>
+    <li><b>#1</b> is on {n_ab} games, close to the {exp} expected, so it is not overdone. Yet its typical game gets
+      {med} reviews, {lift}× the typical indie game ({perm}). Not because of horror: horror games get {hl}×.</li>
     <li><b>{bridge} is the only tag connecting</b> #1's two groups of neighbours: the one tag to watch.</li>
-    <li><b>Mostly robust:</b> top at all {cut_n} pruning settings but in only {top1} of 100 bootstrap resamples; on the
-      2025 test set, still not crowded ({hsat}×) with {hlift}× reviews.</li>
+    <li><b>Mostly robust:</b> top under all {cut_n} pruning settings but only {top1} of 100 random resamples; on unseen
+      2025 games, crowding {hsat}, {hlift}× typical reviews.</li>
   </ul></section>
   <section><h2><span class="n">7</span>Recommended action</h2><ul>
     <li>Week 0: pitch a first-person multiplayer game.</li>
-    <li>Weeks 1–6: prototype. Week 7: Coming Soon page tagged First-Person and Multiplayer/Online Co-Op.</li>
-    <li>Every quarter: re-run and check #1 and {bridge} (section 8).</li>
+    <li>Weeks 1–6: prototype. Week 7: Coming Soon page with both tags.</li>
+    <li>Every quarter: re-run and apply section 8.</li>
   </ul>
   <h2><span class="n">8</span>What would change my mind</h2>
-    <p>First-Person is spreading ({fp25} of 2025 games). If #1 passes 1.5× crowding, I switch to #2 while it stays
-    below 1.5× ({h2sat}× in 2025), then to #3.</p>
+    <p>First-Person is spreading ({fp25} of 2025 games). If #1's crowding passes 1.5, I switch to #2 while it
+    stays below 1.5 ({h2sat} in 2025), then to #3.</p>
   </section>
 </div>
 </body></html>
