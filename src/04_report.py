@@ -53,8 +53,10 @@ V = dict(
     boot_gt1=N["boot_lift_gt1"], lo=f"{N['boot_lift_p05']:.1f}", hi=f"{N['boot_lift_p95']:.1f}", top1=N["boot_top1"],
     floor=N["boot_below_floor"], over=N["boot_sat_over"], s2n=N["s2_pair_n"], s2lift=f"{N['s2_pair_lift']:.1f}",
     rows=row(pk, "pick") + row(pb, "planb") + row(cr),
+    npmi=f"{pk['npmi']:.2f}", pbn=pb["n"], pbexp=f"{pb['expected']:.0f}", pblift=f"{pb['lift']:.1f}",
+    pbnpmi=f"{pb['npmi']:.2f}",
 )
-assert not pk["edge"], "page says the recommended pair has no edge"
+assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
 V["title"] = TITLE.format(**V)
 
 html = (ROOT / "report/template.html").read_text().format_map(V)

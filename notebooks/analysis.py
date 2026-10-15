@@ -207,7 +207,7 @@ print("permutation p =", NUM["perm_p"])
 def rec(r):
     return dict(pair=[r.a, r.b], n=int(r.n_ab), expected=float(r.expected), sat=float(r.saturation),
                 overlap=float(r.overlap), median=float(r.median_reviews), lift=float(r.lift), hit=float(r.hit_rate),
-                edge=bool(G.has_edge(r.a, r.b)))
+                npmi=float(r.npmi), edge=bool(G.has_edge(r.a, r.b)))
 
 b = elig.loc[0]
 NUM.update(best=list(best), runner=list(runner), pick=rec(b), planb=rec(elig.loc[1]), crowd=rec(crowded.loc[0]),
@@ -254,7 +254,7 @@ sizes = {t: 40 + 360 * H.nodes[t]["n"] / nmax for t in H}
 norm = LogNorm(vmin=min(tag_med[t] for t in H), vmax=max(tag_med[t] for t in H))
 ring = {t: ACCENT for t in best} | {t: PLANB for t in runner}
 pk = NUM["pick"]
-msg = (f"{best[0]} × {best[1]}{'' if pk['edge'] else ': no edge'}\n"
+msg = (f"{best[0]} × {best[1]}{'' if pk['edge'] else ': near chance, no edge'}\n"
        f"{pk['n']} games (exp. {pk['expected']:.0f}) · {pk['lift']:.1f}× median reviews")
 
 

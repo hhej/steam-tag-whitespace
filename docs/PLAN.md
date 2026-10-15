@@ -117,3 +117,4 @@ report/report.html → report/report.pdf   # headless Chrome --print-to-pdf, A4,
   - Actions with relative weeks.
   - The broker (betweenness) finding was dropped because no action followed from it.
 - **Figure fix (2026-10-15):** no straight edge may pass under a node that is not one of its ends (15 px clearance). The two dashed pair lines curve (arc3) around any node in the way. Layout is Kamada-Kawai spaced by hops, tried from 41 fixed-seed starts × 24 rotations/flips. Each label must be clearly nearer its own node than any other, with a 15 px gap between labels. The search keeps the drawing whose most ambiguous label is clearest.
+- **Wording (2026-10-15):** "no edge" now reads "near chance, no edge" (NPMI below the 0.10 cutoff). The pair exists in the data: Horror × Multiplayer has 75 games, NPMI 0.066. The plan B label is an HTML overlay on the figure. A line under the pair table defines exp. and over-supply.
