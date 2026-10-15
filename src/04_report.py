@@ -58,7 +58,7 @@ V = dict(
     hn=f"{N['holdout_n']:,}", hsat=f"{N['holdout']['pick']['sat']:.2f}", hlift=f"{N['holdout']['pick']['lift']:.1f}",
     h3lift=f"{N['holdout']['third']['lift']:.1f}", fp25=pct(N["holdout_fp_share"]),
     bridge=N["bridge"][0], hops=N["bridge_hops"], hops_wo=N["bridge_hops_without"],
-    wo5=f"{N['pick_lift_wo_top5']:.1f}", unc=N["uncrowded_n"], ovr=N["overlap_removed"],
+    wo5=f"{N['pick_lift_wo_top5']:.2f}", unc=N["uncrowded_n"], ovr=N["overlap_removed"],
     ova=N["overlap_removed_eg"][0], ovb=N["overlap_removed_eg"][1], ovp=pct(N["overlap_removed_eg_ov"]),
     npmi=f"{pk['npmi']:.2f}", pbn=pb["n"], pbexp=f"{pb['expected']:.0f}", pblift=f"{pb['lift']:.1f}",
     pbnpmi=f"{pb['npmi']:.2f}", pbsat=f"{pb['sat']:.2f}", top3=N["boot_top3"],
@@ -66,6 +66,7 @@ V = dict(
     top_game=N["pick_top_game"], TA=N["third"][0], TB=N["third"][1],
     col_lo=f"{N['colour_lo']:.0f}", col_hi=f"{N['colour_hi']:.0f}",
     hl=f"{N['horror_lift']:.1f}", nhl=f"{N['pick_nonhorror_lift']:.1f}",
+    h2sat=f"{N['holdout']['planb']['sat']:.2f}",
 )
 assert not pk["edge"] and not pb["edge"], "page says both pairs have no edge"
 V["title"] = TITLE.format(**V)
